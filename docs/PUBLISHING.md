@@ -1,27 +1,34 @@
-# Publishing the Axiomony docs to GitHub Pages
+# Publishing Axiomony documentation via GitHub Pages
 
-All files in this `docs/` directory are static HTML, CSS, JavaScript, and SVG. No build command, dependencies, API credentials, or backend are required.
+The website lives in `docs/` and consists only of static HTML, CSS, JavaScript, and SVG files. It does not require a build or any environment secrets.
 
-## Enable GitHub Pages
+## One-time GitHub Pages activation
 
-1. Open the `sjoerdvanderhoorn/axiomony` repository on GitHub.
-2. Open **Settings → Pages**.
-3. Under **Build and deployment**, choose **Deploy from a branch**.
-4. Select **main** and **/docs**, then click **Save**.
-5. Once GitHub finishes publishing, the default project URL should be `https://sjoerdvanderhoorn.github.io/axiomony/`.
+The repository includes an automated deployment workflow at `.github/workflows/pages.yml`. **Repository administrators must first enable GitHub Pages in GitHub's repository settings.** The GitHub integration used to manage the source code cannot change that setting.
 
-**Important:** the repository is currently private. On GitHub Free, Pages generally requires a public repository; GitHub Pro/Team/Enterprise support Pages from private repositories, depending on account and organization settings. If your plan does not support Pages for a private repository, use a paid plan or a separate public documentation repository. Do not make the entire source repository public solely to enable documentation unless you intend to publish all its contents.
+1. Open [Axiomony — Settings → Pages](https://github.com/sjoerdvanderhoorn/axiomony/settings/pages).
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+3. Save the setting if GitHub asks you to.
+4. Open the [Publish Axiomony docs workflow](https://github.com/sjoerdvanderhoorn/axiomony/actions/workflows/pages.yml) and choose **Run workflow** on branch `main`. Future changes to `docs/**` will deploy automatically.
+5. After a successful run, open **https://sjoerdvanderhoorn.github.io/axiomony/**.
 
-Pages websites are normally publicly viewable even when the source repository is private. Never include secrets, private data, or real user credentials in the published `docs/` directory.
+If GitHub Pages is already enabled with **GitHub Actions** as the source, the workflow may start automatically when it is committed; otherwise run it after activation.
 
-## Structure
+## Private repository limitations
 
-- `index.html`: project overview and philosophy
-- `getting-started.html`: bundled/external installation and environment variables
-- `connect.html`: how to connect to the current MCP endpoint
-- `tools.html`: searchable tool reference and privilege requirements
-- `concepts.html`: design, architecture and security status
-- `assets/styles.css`, `assets/site.js`, `assets/favicon.svg`: local static assets
-- `.nojekyll`: disable Jekyll processing
+The Axiomony source repository is private. GitHub Pages from private repositories requires an eligible GitHub plan (GitHub Pro, Team, or Enterprise); GitHub Free only supports public repository Pages. Do not make this repository public just to enable Pages without first reviewing the entire codebase.
 
-All links and assets use relative paths so the site works at `/axiomony/` and under a custom domain.
+**A Pages website is ordinarily public even when its source repository is private.** Never commit secrets, database credentials, personal information, or confidential business data to `docs/`.
+
+## Deployment
+
+The workflow uploads the `docs/` directory using `actions/upload-pages-artifact@v4` and deploys using `actions/deploy-pages@v4`. It runs when documentation or the workflow changes on `main`, and supports manual runs.
+
+- Website homepage: `docs/index.html`
+- Installation: `docs/getting-started.html`
+- MCP connection: `docs/connect.html`
+- Tools and permissions: `docs/tools.html`
+- Architecture and limitations: `docs/concepts.html`
+- Assets: `docs/assets/`
+
+No Jekyll processing is needed because `docs/.nojekyll` is included. All internal links and resources are relative, so the site works at `/axiomony/`.
