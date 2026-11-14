@@ -1,0 +1,21 @@
+# Local secrets and configuration
+.env
+.env.*
+!.env.example
+.local/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Dependencies and build artifacts
+node_modules/
+coverage/
+dist/
+*.log
+*.zip
+
+# Editor and operating-system artifacts
+.DS_Store
+.idea/
+.vscode/
