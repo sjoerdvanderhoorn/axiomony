@@ -1,0 +1,17 @@
+services:
+  pg-mcp:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    # Local-only. Put a TLS reverse proxy in front before exposing it publicly.
+    ports:
+      - "127.0.0.1:3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL

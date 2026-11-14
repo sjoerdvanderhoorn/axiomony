@@ -1,0 +1,41 @@
+# Attach this optional REST service alongside the MCP container.
+# Compose example: docker compose -f compose.yml -f compose.bundled.yml -f compose.rest.yml up -d
+services:
+  pg-mcp:
+    environment:
+      REST_ENABLED: "true"
+      REST_JWT_SECRET_FILE: /run/secrets/pgrst_jwt_secret
+      REST_PUBLIC_URL: ${REST_PUBLIC_URL:-http://localhost:3001}
+      REST_TOKEN_URL: ${REST_TOKEN_URL:-http://localhost:3000/auth/token}
+      REST_EXPOSED_SCHEMAS: ${REST_EXPOSED_SCHEMAS:-public}
+      AUTH_ALLOWED_ORIGINS: ${AUTH_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+    secrets:
+      - pgrst_jwt_secret
+  rest-api:
+    image: postgrest/postgrest:v16.3
+    restart: unless-stopped
+    environment:
+      PGRST_DB_URI: "@/run/secrets/pgrst_db_uri"
+      PGRST_JWT_SECRET: "@/run/secrets/pgrst_jwt_secret"
+      PGRST_JWT_AUD: pg-app-rest
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_DB_SCHEMAS: ${REST_EXPOSED_SCHEMAS:-public}
+      PGRST_OPENAPI_SECURITY_ACTIVE: "true"
+      PGRST_SERVER_CORS_ALLOWED_ORIGINS: ${AUTH_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      PGRST_SERVER_PORT: "3000"
+    secrets:
+      - pgrst_db_uri
+      - pgrst_jwt_secret
+    ports:
+      - "127.0.0.1:3001:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+secrets:
+  pgrst_db_uri:
+    file: ./.local/pgrst_db_uri
+  pgrst_jwt_secret:
+    file: ./.local/pgrst_jwt_secret

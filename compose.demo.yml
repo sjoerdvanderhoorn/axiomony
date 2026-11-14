@@ -1,0 +1,29 @@
+# Combine with compose.yml for an isolated PostgreSQL demonstration.
+# docker compose -f compose.yml -f compose.demo.yml up --build -d
+services:
+  pg-mcp:
+    environment:
+      PGHOST: demo-db
+      PGPORT: "5432"
+      PGDATABASE: mcpdemo
+      MCP_ALLOWED_HOSTS: localhost,127.0.0.1
+    depends_on:
+      demo-db:
+        condition: service_healthy
+  demo-db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mcpdemo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: local_demo_postgres_only
+    volumes:
+      - demo-data:/var/lib/postgresql/data
+      - ./demo/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mcpdemo"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+volumes:
+  demo-data:

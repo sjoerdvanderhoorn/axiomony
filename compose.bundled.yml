@@ -1,0 +1,41 @@
+# Start with: ./scripts/start.sh bundled
+# Bootstrap credentials are created by start.sh and read ONLY by PostgreSQL.
+services:
+  pg-mcp:
+    environment:
+      PGHOST: postgres-db
+      PGPORT: "5432"
+      PGSSL: "false"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+  postgres-db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PGDATABASE:?Set PGDATABASE in .env}
+      POSTGRES_USER: platform_admin
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_bootstrap_password
+    secrets:
+      - postgres_bootstrap_password
+      - pgrst_db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./bundled/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./bundled/02-rest-init.sh:/docker-entrypoint-initdb.d/02-rest-init.sh:ro
+    # No host ports: PostgreSQL is reachable ONLY through the Compose network.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U platform_admin -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  postgres_data:
+secrets:
+  postgres_bootstrap_password:
+    file: ./.local/postgres_bootstrap_password
+  pgrst_db_password:
+    file: ./.local/pgrst_db_password
