@@ -1,13 +1,38 @@
+# External Database (default): Axiomony MCP and PostgREST only.
+# Start: docker compose up -d --build
+# For Standalone, add: -f compose.standalone.yml
 services:
   pg-mcp:
     build: .
     restart: unless-stopped
-    env_file: .env
-    # Local-only. Put a TLS reverse proxy in front before exposing it publicly.
+    environment:
+      # Intentionally enumerate settings. Do not forward the entire .env:
+      # it also contains the bundled database bootstrap password.
+      PGHOST: ${PGHOST:-host.docker.internal}
+      PGPORT: ${PGPORT:-5432}
+      PGDATABASE: ${PGDATABASE:?Set PGDATABASE in .env}
+      PGSSL: ${PGSSL:-false}
+      PGSSL_REJECT_UNAUTHORIZED: ${PGSSL_REJECT_UNAUTHORIZED:-true}
+      PORT: '3000'
+      MCP_ALLOWED_HOSTS: ${MCP_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      MAX_BODY_BYTES: ${MAX_BODY_BYTES:-2097152}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5-mini}
+      PLAN_TTL_MINUTES: ${PLAN_TTL_MINUTES:-20}
+      REST_ENABLED: 'true'
+      REST_JWT_SECRET_FILE: /run/secrets/rest_jwt_secret
+      REST_MCP_TOOLS: ${REST_MCP_TOOLS:-false}
+      REST_PUBLIC_URL: ${REST_PUBLIC_URL:-http://localhost:3001}
+      REST_TOKEN_URL: ${REST_TOKEN_URL:-http://localhost:3000/auth/token}
+      REST_EXPOSED_SCHEMAS: ${REST_EXPOSED_SCHEMAS:-public}
+      AUTH_ALLOWED_ORIGINS: ${AUTH_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      APP_HOSTING_ENABLED: 'false'
+    secrets:
+      - rest_jwt_secret
     ports:
-      - "127.0.0.1:3000:3000"
+      - '127.0.0.1:3000:3000'
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     read_only: true
     tmpfs:
       - /tmp
@@ -15,3 +40,38 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+
+  rest-api:
+    image: postgrest/postgrest:v16.3
+    restart: unless-stopped
+    environment:
+      # libpq reads PG* settings when the URI has no connection fields.
+      PGRST_DB_URI: 'postgresql://'
+      PGHOST: ${PGHOST:-host.docker.internal}
+      PGPORT: ${PGPORT:-5432}
+      PGDATABASE: ${PGDATABASE:?Set PGDATABASE in .env}
+      PGUSER: postgrest_authenticator
+      PGPASSWORD: ${REST_AUTH_PASSWORD:?Set a separate REST_AUTH_PASSWORD in .env}
+      PGSSLMODE: ${PGSSLMODE:-prefer}
+      PGRST_JWT_SECRET: '@/run/secrets/rest_jwt_secret'
+      PGRST_JWT_AUD: pg-app-rest
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_DB_SCHEMAS: ${REST_EXPOSED_SCHEMAS:-public}
+      PGRST_OPENAPI_SECURITY_ACTIVE: 'true'
+      PGRST_SERVER_CORS_ALLOWED_ORIGINS: ${AUTH_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      PGRST_SERVER_PORT: '3000'
+    secrets:
+      - rest_jwt_secret
+    ports:
+      - '127.0.0.1:3001:3000'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+# REST signing secret is supplied by the operator and never committed.
+secrets:
+  rest_jwt_secret:
+    environment: REST_JWT_SECRET
