@@ -73,28 +73,57 @@ Two types of MCP tools handle different responsibilities:
 
 ## Quick start
 
-Requires Docker Engine and Docker Compose. The startup script uses a POSIX shell.
+Choose one of two Docker deployments:
 
-~~~sh
+| Mode | Included services |
+| --- | --- |
+| **Standalone** | MCP server, REST server, PostgreSQL database, and Nginx HTTP server |
+| **External Database** | MCP server and REST server, connected to your existing database |
+
+No separate demo stack, host startup scripts, or hardcoded passwords are required.
+
+### Configure
+
+```sh
 git clone https://github.com/sjoerdvanderhoorn/axiomony.git
 cd axiomony
 cp .env.example .env
-# Edit PGDATABASE in .env. OPENAI_API_KEY enables AI-assisted administration.
-./scripts/start.sh bundled
-~~~
+```
 
-This starts the MCP service, bundled database, and compatibility REST service. The local endpoint is **http://127.0.0.1:3000/mcp**.
+Edit `.env` before starting. **Both modes** require `PGDATABASE`, a strong `REST_AUTH_PASSWORD` for the restricted REST account, and a random `REST_JWT_SECRET` (at least 32 characters).
 
-To display the generated **local-only** bootstrap administrator credentials:
+- **Standalone:** Also set your own strong `POSTGRES_BOOTSTRAP_PASSWORD`. The initial administrator username is `platform_admin`. There is no default password; Compose passes your value to the database as a secret, **not to the MCP or REST container**.
+- **External Database:** Set `PGHOST`, `PGPORT`, `PGSSL`, and `PGSSLMODE`. Prepare the restricted `postgrest_authenticator` account in your existing database first, using the same password as `REST_AUTH_PASSWORD`. The [installation guide](https://sjoerdvanderhoorn.github.io/axiomony/getting-started.html) explains how.
 
-~~~sh
-./scripts/show-credentials.sh
+### Start
+
+**Standalone — all services:**
+
+```sh
+docker compose -f compose.yml -f compose.standalone.yml up -d --build
+```
+
+**External Database — MCP and REST only:**
+
+```sh
+docker compose up -d --build
+```
+
+**Check the MCP server:**
+
+```sh
 curl http://127.0.0.1:3000/health
-~~~
+```
 
-For an existing PostgreSQL server, follow the [external database installation guide](https://sjoerdvanderhoorn.github.io/axiomony/getting-started.html).
+MCP runs at `http://127.0.0.1:3000/mcp`; REST at `http://127.0.0.1:3001/`. Standalone also serves static user-created pages at `http://127.0.0.1:8088/apps/...`.
 
-> **Local testing only:** The MCP service currently authenticates using reusable database credentials over HTTP Basic. Do not expose the service to the public internet. Production OAuth/OIDC and secure browser sessions are not implemented.
+**Important:** The bundled database stores credentials in a persistent volume. Changing `POSTGRES_BOOTSTRAP_PASSWORD` later does **not** rotate an existing database password. Update the database role explicitly instead. Never delete a populated volume just to reset credentials.
+
+Every MCP request still authenticates using the **individual user's own database login**, not the bundled superuser or REST service account. The limited REST account is separate and must never be granted superuser privileges.
+
+> **Development use only.** The local `.env` contains secrets, and the PostgREST login password is passed in its container environment. Do not expose this prototype publicly; stronger authentication, production secrets management, HTTPS and integration tests remain necessary.
+
+[Full installation and external role setup](https://sjoerdvanderhoorn.github.io/axiomony/getting-started.html).
 
 ## Connect an AI client
 
@@ -123,12 +152,12 @@ Not all hosted AI assistants support the authentication method used in this prot
 | Select, insert, update, and delete records | Available; enforced database permissions |
 | Explain grants, policies, and constraints | Available; explanations are best-effort |
 | Propose and explicitly approve database changes | Available; administrator-only and in-memory plans |
-| Publish user-owned static HTML/CSS/JS | Optional; pages are publicly readable |
+| Publish user-owned static HTML/CSS/JS | Standalone mode; pages are publicly readable |
 | Legacy REST integration | Included for compatibility |
 | Secure hosted AI login and browser-to-MCP runtime | Not implemented |
 | Production-ready deployment and end-to-end verification | Not completed |
 
-Optional static hosting tools require `APP_HOSTING_ENABLED=true`. Legacy REST MCP helpers require `REST_MCP_TOOLS=true`. The tools each account sees depend on its permissions.
+Static hosting tools are available in **Standalone** mode. Legacy REST MCP helpers require `REST_MCP_TOOLS=true`. The tools each account sees depend on its permissions.
 
 ## Documentation
 

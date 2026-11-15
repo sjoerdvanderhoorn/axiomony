@@ -18,3 +18,13 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Run unit tests
         run: npm test
+
+      - name: Validate both Docker Compose deployments
+        env:
+          PGDATABASE: axiomony_ci
+          POSTGRES_BOOTSTRAP_PASSWORD: ci-only-bootstrap-password-not-for-production
+          REST_AUTH_PASSWORD: ci-only-rest-password-not-for-production
+          REST_JWT_SECRET: ci-only-rest-jwt-signing-secret-not-for-production
+        run: |
+          docker compose config --quiet
+          docker compose -f compose.yml -f compose.standalone.yml config --quiet
