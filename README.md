@@ -1,8 +1,12 @@
 # Axiomony
 
-**Shared rules. Individual freedom.**
+![Axiomony logo — structured shared core, flexible individual experiences](docs/assets/axiomony-logo.png)
 
-Axiomony is an experimental Node.js Model Context Protocol (MCP) server that lets organizations define real PostgreSQL data models, permissions, and business rules, while each employee is free to create a task-specific user experience with their own AI assistant.
+> **Shared rules. Individual freedom.**
+
+**Every employee designs their own user experience.** With Axiomony, each employee can—and is encouraged to—use their own AI agent to create, personalize, and continually improve the screens, forms, dashboards, reports, and workflows they use. Rather than conforming to a standard interface, they shape every aspect of their UX to fit their exact tasks, requirements, wishes, and personal preferences. The organization defines the shared data and binding business rules; individuals decide how to work within those rules.
+
+Axiomony is an early-stage Node.js Model Context Protocol (MCP) server that lets organizations define real PostgreSQL data models, permissions, and business rules, while each employee is free to create a task-specific user experience with their own AI assistant.
 
 > **Status: development prototype (v0.5.1). Not ready for public deployment.** Authentication currently uses PostgreSQL credentials over HTTP Basic. Do not expose this service directly to the internet. Docker deployment has not yet been tested end-to-end.
 
@@ -181,7 +185,7 @@ npm install
 npm test
 ```
 
-All existing unit tests run without a live database. The code is experimental and has **not** been validated end-to-end with running Docker, Nginx, PostgreSQL, and a hosted AI client.
+All existing unit tests run without a live database. The code is early-stage and has **not** been validated end-to-end with running Docker, Nginx, PostgreSQL, and a hosted AI client.
 
 ## Environment variables
 
@@ -189,7 +193,7 @@ See [`.env.example`](.env.example). Important groups include `PGHOST`, `PGPORT`,
 
 Do **not** put per-user database passwords into `.env`. Keep `.env`, `.local/`, Docker secrets, and all credentials out of version control. Only `.env.example` is committed.
 
-## Security limitations and roadmap
+## Security limitations
 
 - **Authentication:** HTTP Basic relays reusable PostgreSQL credentials for each MCP request. Public use requires HTTPS, OAuth/OIDC integration, client security controls, brute-force protection, and audit logging.
 - **Authorization:** role-aware tool discovery is only a convenience; the effective PostgreSQL role, GRANTs, row policies, constraints, and triggers must enforce all data permissions.
@@ -200,8 +204,16 @@ Do **not** put per-user database passwords into `.env`. Keep `.env`, `.local/`, 
 - **Legacy REST:** PostgREST is retained for compatibility, but new AI-generated applications should not use it directly by default.
 - **Database accounts:** do not let an LLM generate user passwords. Create PostgreSQL LOGIN roles in a controlled administrative workflow outside this prototype.
 
-Axiomony is experimental infrastructure, not a finished SaaS or a production security boundary.
+Axiomony is early-stage infrastructure, not a finished SaaS or a production security boundary.
 
 ### Local demo credentials
 
 `demo/init.sql` contains predictable example passwords strictly for local demonstrations. Never reuse them or expose a demo database publicly.
+
+## Roadmap: other database engines
+
+PostgreSQL is currently the **only implemented database backend**. Future research will assess whether MariaDB, MySQL Community Server, Microsoft SQL Server, and Firebird can enforce equivalent table, row, column, cell-dependent and workflow permissions **inside the database engine**. SQLite is a lower-priority fit because it has no database user accounts or SQL `GRANT`/`REVOKE`.
+
+The key distinction is that column grants and DML triggers alone do **not** secure row-dependent `SELECT` results. Every future engine must demonstrate secure read *and* write behavior, independent of generated frontends or MCP authorization checks. No alternative engine support has been implemented.
+
+See [ROADMAP.md](ROADMAP.md) for the research comparison, limitations, source references and acceptance criteria.
