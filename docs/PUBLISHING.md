@@ -14,11 +14,13 @@ The repository includes an automated deployment workflow at `.github/workflows/p
 
 If GitHub Pages is already enabled with **GitHub Actions** as the source, the workflow may start automatically when it is committed; otherwise run it after activation.
 
-## Private repository limitations
+## Public repository
 
-The Axiomony source repository is private. GitHub Pages from private repositories requires an eligible GitHub plan (GitHub Pro, Team, or Enterprise); GitHub Free only supports public repository Pages. Do not make this repository public just to enable Pages without first reviewing the entire codebase.
+Axiomony is now a **public GitHub repository**, so its documentation can be published through GitHub Pages on eligible GitHub plans. Enable Pages once through **Settings → Pages → Build and deployment → GitHub Actions**; then the existing workflow handles changes to `docs/**` automatically.
 
-**A Pages website is ordinarily public even when its source repository is private.** Never commit secrets, database credentials, personal information, or confidential business data to `docs/`.
+The GitHub Actions default `GITHUB_TOKEN` cannot activate Pages through `actions/configure-pages` if no Pages site exists. If Pages has not been enabled, a repository administrator must turn it on in Settings; merely pushing the files is insufficient.
+
+Never place secrets, database credentials, or confidential records in `docs/`.
 
 ## Deployment
 
