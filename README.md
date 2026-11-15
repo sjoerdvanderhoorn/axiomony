@@ -6,6 +6,8 @@
 
 **Every employee designs their own user experience.** With Axiomony, each employee can—and is encouraged to—use their own AI agent to create, personalize, and continually improve the screens, forms, dashboards, reports, and workflows they use. Rather than conforming to a standard interface, they shape every aspect of their UX to fit their exact tasks, requirements, wishes, and personal preferences. The organization defines the shared data and binding business rules; individuals decide how to work within those rules.
 
+**Documentation:** [Axiomony website](https://sjoerdvanderhoorn.github.io/axiomony/) · [Full roadmap](ROADMAP.md)
+
 Axiomony is an early-stage Node.js Model Context Protocol (MCP) server that lets organizations define real PostgreSQL data models, permissions, and business rules, while each employee is free to create a task-specific user experience with their own AI assistant.
 
 > **Status: development prototype (v0.5.1). Not ready for public deployment.** Authentication currently uses PostgreSQL credentials over HTTP Basic. Do not expose this service directly to the internet. Docker deployment has not yet been tested end-to-end.

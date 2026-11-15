@@ -1,36 +1,35 @@
 # Publishing Axiomony documentation via GitHub Pages
 
-The website lives in `docs/` and consists only of static HTML, CSS, JavaScript, and SVG files. It does not require a build or any environment secrets.
+**Live documentation:** https://sjoerdvanderhoorn.github.io/axiomony/
 
-## One-time GitHub Pages activation
+The GitHub Pages website is **enabled and deployed** from this public repository using the GitHub Actions workflow at `.github/workflows/pages.yml`. Its deployment completed successfully on 15 November 2026.
 
-The repository includes an automated deployment workflow at `.github/workflows/pages.yml`. **Repository administrators must first enable GitHub Pages in GitHub's repository settings.** The GitHub integration used to manage the source code cannot change that setting.
+## Updating the website
 
-1. Open [Axiomony — Settings → Pages](https://github.com/sjoerdvanderhoorn/axiomony/settings/pages).
-2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
-3. Save the setting if GitHub asks you to.
-4. Open the [Publish Axiomony docs workflow](https://github.com/sjoerdvanderhoorn/axiomony/actions/workflows/pages.yml) and choose **Run workflow** on branch `main`. Future changes to `docs/**` will deploy automatically.
-5. After a successful run, open **https://sjoerdvanderhoorn.github.io/axiomony/**.
+1. Edit any static file under `docs/` on branch `main`.
+2. GitHub automatically starts the [Publish Axiomony docs workflow](https://github.com/sjoerdvanderhoorn/axiomony/actions/workflows/pages.yml).
+3. The workflow uploads the `docs/` directory and deploys it to GitHub Pages.
+4. Check the [latest workflow run](https://github.com/sjoerdvanderhoorn/axiomony/actions/workflows/pages.yml) if a change does not appear.
 
-If GitHub Pages is already enabled with **GitHub Actions** as the source, the workflow may start automatically when it is committed; otherwise run it after activation.
+A manual deployment can be started with **Run workflow** if needed. The workflow uses `actions/configure-pages@v5`, `actions/upload-pages-artifact@v4` and `actions/deploy-pages@v4`.
 
-## Public repository
+## Existing GitHub Pages configuration
 
-Axiomony is now a **public GitHub repository**, so its documentation can be published through GitHub Pages on eligible GitHub plans. Enable Pages once through **Settings → Pages → Build and deployment → GitHub Actions**; then the existing workflow handles changes to `docs/**` automatically.
+- Repository visibility: **public**
+- Build source: **GitHub Actions**
+- Website path: `/axiomony/`
+- Source folder: `docs/`
+- No Jekyll or build process required (`.nojekyll` is present)
 
-The GitHub Actions default `GITHUB_TOKEN` cannot activate Pages through `actions/configure-pages` if no Pages site exists. If Pages has not been enabled, a repository administrator must turn it on in Settings; merely pushing the files is insufficient.
+Changes to `.github/workflows/pages.yml` also trigger the publication workflow. The repository's Pages settings are available at [Settings → Pages](https://github.com/sjoerdvanderhoorn/axiomony/settings/pages).
 
-Never place secrets, database credentials, or confidential records in `docs/`.
+## Content
 
-## Deployment
+- `index.html`: project overview and philosophy
+- `getting-started.html`: bundled/external installation and configuration
+- `connect.html`: MCP client connection examples
+- `tools.html`: 23 MCP tools, filters and permissions
+- `concepts.html`: architecture, security and roadmap link
+- `assets/`: local images, favicon, CSS and JavaScript
 
-The workflow uploads the `docs/` directory using `actions/upload-pages-artifact@v4` and deploys using `actions/deploy-pages@v4`. It runs when documentation or the workflow changes on `main`, and supports manual runs.
-
-- Website homepage: `docs/index.html`
-- Installation: `docs/getting-started.html`
-- MCP connection: `docs/connect.html`
-- Tools and permissions: `docs/tools.html`
-- Architecture and limitations: `docs/concepts.html`
-- Assets: `docs/assets/`
-
-No Jekyll processing is needed because `docs/.nojekyll` is included. All internal links and resources are relative, so the site works at `/axiomony/`.
+This public documentation website does **not** host the MCP service. Do not publish secrets, passwords, API tokens, sensitive data or customer records in `docs/`. Static pages and assets are publicly visible.
