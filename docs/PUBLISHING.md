@@ -30,7 +30,10 @@ Changes to `.github/workflows/pages.yml` also trigger the publication workflow. 
 - `connect.html`: MCP client connection examples
 - `tools.html`: 23 MCP tools, filters and permissions
 - `concepts.html`: architecture and security details
-- `assets/`: local SVG logo, favicon, CSS, JavaScript and `acme-walkthrough.gif` (60-second concept animation)
-- `../scripts/build_acme_walkthrough.py`: reproducible GIF generator (requires Pillow)
+- `acme-demo.html` and `demo/acme.js`: interactive, editable JavaScript walkthrough
+- `assets/acme-software-demo.mp4`: Full HD 1920×1080, 30 fps example video
+- `assets/acme-walkthrough.gif`: compact animated GitHub README preview
+- `assets/acme-poster.webp`: lightweight video poster
+- `../demo/acme/render.mjs`: reproducible Node.js + FFmpeg video and GIF export
 
 This public documentation website does **not** host the MCP service. Do not publish secrets, passwords, API tokens, sensitive data or customer records in `docs/`. Static pages and assets are publicly visible.
