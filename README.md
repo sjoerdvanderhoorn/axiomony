@@ -34,7 +34,9 @@ They all get different interfaces—without having to build three different busi
   <img src="docs/assets/acme-walkthrough.gif" alt="Acme example: an administrator defines the shared database in ChatGPT, then Purchasing, Sales and Finance create their own applications" width="900">
 </p>
 
-<p align="center"><sub>Illustrative one-minute concept animation.</sub></p>
+<p align="center"><sub>Illustrative one-minute concept animation · Rendered from editable JavaScript, 1920 × 1080 at 30 fps.</sub></p>
+
+<p align="center"><a href="https://sjoerdvanderhoorn.github.io/axiomony/acme-demo.html">Explore the interactive demo</a> · <a href="demo/acme/README.md">Edit the animation and render a new video</a></p>
 
 ## How Axiomony works
 
