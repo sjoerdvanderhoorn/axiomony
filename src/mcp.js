@@ -68,30 +68,32 @@ export function buildMcpServer(credentials, identity, workspaceSession = 'defaul
   }, dbTool((db, args) => explainPermissions(db, args)));
 
   // Default architecture for AI-generated task pages: use the existing
-  // Data-MCP tools at runtime, rather than constructing direct REST calls.
+  // Data MCP can serve a trusted runtime; REST documentation supports standalone applications.
   server.registerTool('app_integration_guide', {
-    description: 'Guide for AI-generated task-specific pages and reports: use Data-MCP through a trusted runtime, not direct PostgREST calls. Explains security requirements for standalone web apps.',
+    description: 'Explain how AI-built apps use Axiomony: Data MCP through a trusted client, or authenticated REST requests using the included PostgREST server. Business rules and access rights are enforced by PostgreSQL.',
     inputSchema: z.object({}),
     annotations: { readOnlyHint: true }
   }, safe(async () => ({
-    preferred_runtime_data_path: 'AI agent / trusted MCP client -> Data-MCP -> PostgreSQL',
-    do_not_use_by_default: 'Generated pages and reporting applications must not call PostgREST directly.',
-    discovery_tools: ['list_tables', 'describe_table', 'explain_permissions'],
+    database: 'PostgreSQL is the source of truth for data, permissions, and business rules.',
+    mcp_path: 'AI assistant or trusted runtime -> Data MCP -> PostgreSQL',
+    rest_path: 'User-created application -> authenticated PostgREST -> PostgreSQL',
+    rest_documentation: {
+      enabled: config.restMcpToolsEnabled,
+      tools: ['rest_api_guide', 'rest_relationships', 'generate_rest_request'],
+      note: 'Enable REST_MCP_TOOLS=true to expose the documentation and request examples to AI assistants.'
+    },
     optional_static_hosting: {
       enabled: config.appHostingEnabled,
-      explanation: 'Publish static HTML, CSS, and JS under user-owned directories using site_create_file, site_update_file, site_read_file, site_list, and site_delete_file. Nginx serves the files without granting direct PostgreSQL REST access.',
-      important: 'Published pages are publicly accessible at their URLs. Never place credentials or confidential data in site files. Dynamic data access needs a trusted Data-MCP runtime or secured backend; never embed PostgreSQL passwords in browsers.'
+      explanation: 'Publish static HTML, CSS, and JavaScript under user-owned directories. Published pages are publicly readable.',
+      important: 'Never put database passwords, admin credentials, or private tokens in published files. Data access requires secure end-user authentication.'
     },
     data_tools: ['select_records', 'insert_record', 'update_records', 'delete_records'],
-    implementation_guidance: [
-      'Build task-specific UI screens from metadata and field privileges, then use Data-MCP for all actual data operations.',
-      'All MCP calls use the authenticated PostgreSQL user; RLS, column privileges, and triggers are authoritative.',
-      'Never embed database credentials, tokens, or administrative privileges in generated frontend code.',
-      'A standalone browser cannot safely send reusable Basic-auth database credentials to MCP. Use a trusted MCP runtime or a secure backend with user sessions and server-side MCP access.',
-      'Never expose administration tools to end-user apps.'
-    ],
-    existing_optional_legacy_rest: 'PostgREST remains available for explicit legacy integrations, but is not the default route for new AI-generated task pages.',
-    warning: 'Public deployments require TLS, OAuth/OIDC sessions, and a secure server-side data route.'
+    security: [
+      'Both MCP and REST operations must be subject to the authenticated user\'s effective PostgreSQL privileges, RLS policies, and triggers.',
+      'Use a trusted MCP runtime for MCP-based apps or a secure token and session flow for REST-based apps.',
+      'Do not embed reusable PostgreSQL passwords or privileged credentials in browser code.',
+      'Never expose database administration tools to ordinary end-user applications.'
+    ]
   })));
 
   // Optional public STATIC hosting, isolated by the verified PostgreSQL login.
@@ -137,10 +139,10 @@ export function buildMcpServer(credentials, identity, workspaceSession = 'defaul
   }
 
   if (config.restMcpToolsEnabled) {
-    // Optional backward-compatible REST helpers. AI-generated pages use
+    // REST documentation and request examples for AI-generated applications.
     // app_integration_guide and Data-MCP by default.
     server.registerTool('rest_api_guide', {
-      description: 'OPTIONAL legacy REST integration: explain direct PostgREST requests. New AI-generated task pages should use app_integration_guide and Data-MCP.',
+      description: 'Document the authenticated PostgREST API so an AI assistant can build an app that reads and writes permitted database records.',
       inputSchema: z.object({}),
       annotations: { readOnlyHint: true }
     }, safe(async () => ({
@@ -155,7 +157,7 @@ export function buildMcpServer(credentials, identity, workspaceSession = 'defaul
         schemas: config.restSchemas },
       tools: ['list_tables', 'describe_table', 'rest_relationships', 'generate_rest_request'],
       security: 'PostgreSQL GRANT/RLS/triggers enforce authorization; PostgREST connects using a limited authenticator and SET ROLE. MCP is not in the direct REST data path.',
-      warnings: ['Development prototype; never expose publicly without TLS, OIDC, rate limiting, and database hardening.',
+      warnings: ['Never expose public REST access without TLS, secure user authentication, rate limiting, and database hardening.',
         'The database administrator must explicitly authorize app users with GRANT <user> TO postgrest_authenticator WITH INHERIT FALSE, SET TRUE.']
     })));
 
@@ -171,7 +173,7 @@ export function buildMcpServer(credentials, identity, workspaceSession = 'defaul
     }));
 
     server.registerTool('generate_rest_request', {
-      description: 'OPTIONAL REST integration: generate a PostgREST URL and fetch example. Not the default for generated pages (use Data-MCP). This tool does not execute queries.',
+      description: 'Generate a PostgREST URL and fetch example for an AI-built application. This tool does not execute queries.',
       inputSchema: z.object({ ...relation,
         operation: z.enum(['select', 'insert', 'update', 'delete']),
         columns: z.array(z.string()).max(100).optional(),
@@ -226,7 +228,7 @@ export function buildMcpServer(credentials, identity, workspaceSession = 'defaul
   // admin authorization inside every handler to prevent tool-call bypass.
   if (identity.is_admin) {
     server.registerTool('inspect_database', {
-      description: 'Lees werkelijke PostgreSQL-catalogi: schema, kolommen, RLS, grants, constraints, triggers, functies en comments.',
+      description: 'Inspect actual PostgreSQL catalogs: schemas, columns, RLS policies, grants, constraints, triggers, functions, and comments.',
       inputSchema: z.object({}),
       annotations: { readOnlyHint: true }
     }, safe(async () => inspectDatabase(credentials)));
