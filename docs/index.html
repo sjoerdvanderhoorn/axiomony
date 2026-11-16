@@ -15,7 +15,7 @@
 <header class="site-header"><nav class="nav container" aria-label="Axiomony"><a class="brand" href="index.html"><img class="brand-lockup" src="assets/axiomony-wordmark.svg" alt="Axiomony"></a></nav></header>
 <section class="page-intro" id="overview"><div class="container"><div class="eyebrow">Axiomony documentation</div><h1>Shared rules.<br>Individual interfaces.</h1><p>Axiomony is an MCP server for PostgreSQL. Use it to define the shared data, permissions and business rules of your organization, then create your own tools and workflows. Connect an existing database or use Standalone for a complete local installation.</p></div></section><div class="container overview-layout">
   <aside class="overview-sidebar sidebar" aria-label="Documentation navigation"><div class="sidebar-section"><strong>On this page</strong><div class="sidebar-links"><a href="#overview">Overview</a><a href="#principle">The principle</a><a href="#interfaces">MCP capabilities</a><a href="#data-authority">Rules belong to the database</a><a href="#example">An example: ACME</a><a href="#scope">Security boundaries</a></div></div><div class="sidebar-section sidebar-pages"><strong>Pages</strong><div class="sidebar-links"><a href="index.html" aria-current="page">Introduction</a><a href="getting-started.html">Installation</a><a href="connect.html">Connect an AI</a><a href="tools.html">MCP tools</a><a href="concepts.html">Architecture &amp; security</a><a href="https://github.com/sjoerdvanderhoorn/axiomony" target="_blank" rel="noopener noreferrer">GitHub</a></div></div></aside>
-  <main id="content" class="intro-content"><p>Conventional business applications bundle a data model with prescribed screens, flows and policies. Even a configurable product carries the vendor's design decisions. Axiomony separates the long-lived agreements of an organization from the short-lived interfaces people use to do their work.</p>
+  <main id="content" class="intro-content"><p><strong>Axiomony points toward the next evolution of AI:</strong> people creating their own tools around shared business data, without needing a custom software project for every workflow.</p>
     <blockquote class="intro-quote">Standardize the data and the rules, not the user interface.</blockquote>
 
     <hr class="chapter-divider">
@@ -34,7 +34,7 @@
     <hr class="chapter-divider">
     <section id="interfaces">
       <h2>Three ways to work with one database</h2>
-      <p>Axiomony distinguishes changes to the organization's shared model from ordinary work with its records.</p>
+      <p>Through Axiomony, an AI assistant can configure PostgreSQL, work with permitted records, or get REST documentation for building a standalone application.</p>
       <div class="concept-diagram" role="img" aria-label="Your AI assistant connects to Axiomony MCP, which can govern data and rules, use permitted data, and provide REST documentation for PostgreSQL.">
         <div class="pipeline-node"><strong>Your AI assistant</strong></div>
         <div class="pipeline-arrow" aria-hidden="true">↓</div>
@@ -50,7 +50,7 @@
         <p class="diagram-caption">The database enforces access rights and business rules whichever interface is used.</p>
       </div>
       <p><strong>Administration MCP</strong> accepts natural-language requests for changes to schema, roles and rules, prepares a proposed migration using an internal AI model, and requires explicit administrator approval.</p>
-      <p><strong>Data MCP</strong> offers predictable, permission-aware tools to inspect and change records. It uses the authenticated database user's own credentials. The database remains authoritative if an application behaves incorrectly.</p>
+      <p><strong>Data MCP</strong> provides predictable tools to read and change records using the authenticated user's PostgreSQL permissions.</p><p><strong>REST documentation</strong> lets an AI agent generate API requests for an application that uses PostgREST and the same database-enforced rules.</p>
     </section>
 
     <hr class="chapter-divider">
