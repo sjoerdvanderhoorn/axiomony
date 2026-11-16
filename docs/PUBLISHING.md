@@ -30,6 +30,7 @@ Changes to `.github/workflows/pages.yml` also trigger the publication workflow. 
 - `connect.html`: MCP client connection examples
 - `tools.html`: 23 MCP tools, filters and permissions
 - `concepts.html`: architecture, security and roadmap link
-- `assets/`: local images, favicon, CSS and JavaScript
+- `assets/`: local SVG logo, favicon, CSS, JavaScript and `acme-walkthrough.gif` (60-second concept animation)
+- `../scripts/build_acme_walkthrough.py`: reproducible GIF generator (requires Pillow)
 
 This public documentation website does **not** host the MCP service. Do not publish secrets, passwords, API tokens, sensitive data or customer records in `docs/`. Static pages and assets are publicly visible.

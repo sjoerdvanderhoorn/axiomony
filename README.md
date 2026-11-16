@@ -3,184 +3,145 @@
   <br>
   <img src="docs/assets/axiomony-wordmark.svg" alt="AXIOMONY" width="350">
 
-  <h3>Shared rules. Individual freedom.</h3>
-
-  <p><strong>One governed data foundation. An experience shaped by every user.</strong></p>
+  <p><strong>Shared rules. Individual freedom.</strong></p>
 
   <p>
-    <a href="https://sjoerdvanderhoorn.github.io/axiomony/">Website</a> ·
-    <a href="https://sjoerdvanderhoorn.github.io/axiomony/getting-started.html">Get started</a> ·
+    <a href="https://sjoerdvanderhoorn.github.io/axiomony/">Introduction</a> ·
+    <a href="https://sjoerdvanderhoorn.github.io/axiomony/getting-started.html">Installation</a> ·
     <a href="https://sjoerdvanderhoorn.github.io/axiomony/connect.html">Connect an AI</a> ·
     <a href="https://sjoerdvanderhoorn.github.io/axiomony/tools.html">MCP tools</a> ·
     <a href="ROADMAP.md">Roadmap</a>
   </p>
-
-  <p><a href="https://github.com/sjoerdvanderhoorn/axiomony/actions/workflows/tests.yml"><img src="https://github.com/sjoerdvanderhoorn/axiomony/actions/workflows/tests.yml/badge.svg" alt="Node.js tests"></a></p>
 </div>
 
-> **Development preview · v0.5.1.** Axiomony is experimental self-hosted software, not ready for production. Its current authentication is intended for controlled local use only. [Read the security limitations](https://sjoerdvanderhoorn.github.io/axiomony/concepts.html#security).
+# Axiomony
 
-## Build the software your team actually needs
+**An AI-accessible interface to a shared business database.** Define data structures, access permissions and business rules at the source, then let each person or team build the tools and user experience that suit their work.
 
-Traditional business software separates the frontend, backend, and database. Even schema-first and low-code platforms impose choices about how applications look, behave, and integrate. Changing those choices often means specialist developers, lengthy projects, or expensive vendor requests.
+> Up until now, AI has been very good at making tools for individuals that however don't adapt well to business processes. It has also been very good at assisting developers building software, which by the nature of generalization, does not adapt very well to individual use cases. Axiomony brings AI to a new level by giving individual users freedom to create their own apps that then securely connect to a database that represents the rules and flows of the shared business processes.
 
-**Axiomony takes a different approach.** Your organization defines its data, access permissions, and business rules once. Then each person or department uses an AI assistant to shape the forms, reports, dashboards, integrations, and user experience they need.
+## The concept
 
-**The database—not the interface—decides what is allowed.**
+Conventional software separates the database, backend and user interface, often embedding business rules in code written for one particular application. Schema-first tools and low-code systems can reduce development effort, but teams still inherit a vendor's choices about screens, workflows and integrations.
 
-*Standardize the data and the rules, not the user interface.*
+Axiomony separates **the shared rules of the organization** from **the individual experience of working within them**.
 
-## Why Axiomony?
+- **Define the business model with AI.** Describe tables, relationships, permissions and business rules in natural language. An authorized administrator reviews and approves the proposed database changes.
+- **Enforce rules in the database.** Permissions, constraints and policies apply regardless of which application accesses the data. There is no separate, competing application-specific rules engine.
+- **Give people their own interface.** Purchasing may use a mobile invoice form; Sales may want a pipeline view; Finance may prefer a reconciliation dashboard. All use the same governed data.
+- **Keep ordinary tools predictable.** A dedicated Data MCP exposes fixed read/write operations using each authenticated database user's own privileges.
 
-- **Own your experience.** Design the interface and workflow around your job instead of fitting your work into a vendor's screens.
-- **One shared source of truth.** Keep data relationships, permissions, and business rules in a single governed database.
-- **Describe changes to an AI.** Authorized administrators can request a new table, permission, or business rule in natural language, review the proposed change, and explicitly approve it.
-- **Enforce permissions at the source.** User-created applications cannot grant themselves extra database rights.
-- **Adapt when work changes.** Give teams the freedom to prototype their own improvements rather than waiting for a vendor roadmap.
+**Standardize the data and the rules, not the user interface.**
 
-### Imagine what your team could build
+## A minute with ACME
 
-| Team | A tailored experience |
-| --- | --- |
-| Purchasing | A phone-friendly tool to capture and register supplier invoices |
-| Finance | A reconciliation dashboard or a bank integration using an approved banking API |
-| Operations | A specialized checklist and workflow |
-| Management | A personalized overview of the information their role may access |
+This illustrated example follows a fictitious company, **ACME**, as it defines an accounting model for customers, suppliers, orders, invoices and payments. The database enforces access and approval rules, while Purchasing, Sales and Finance create separate interfaces with AI assistance.
 
-These are **illustrative scenarios**, not prebuilt Axiomony apps. Working mobile interfaces, banking integrations, and standalone browser apps require additional secure runtimes or services.
+![60-second Axiomony concept walkthrough: ACME defines its database and business rules, then Purchasing, Sales, and Finance build their own experiences](docs/assets/acme-walkthrough.gif)
+
+*Concept illustration, not a live application recording. A secure browser-to-MCP runtime and external integrations require additional implementation.*
 
 ## How Axiomony works
 
-~~~text
-          Your AI assistant
-                 |
-            Axiomony MCP
-            /          \
-   Govern data & rules   Use permitted data
-   (admin approval)      (per-user access)
-            \          /
-            Shared database
-       Data · Access · Rules
-                 |
-         Your own experiences
-     Forms · Reports · Workflows
-~~~
+GitHub renders the following **Mermaid diagram** directly from this README:
 
-Two types of MCP tools handle different responsibilities:
+```mermaid
+flowchart TD
+    A["Process owner + AI assistant"] --> AM["Administration MCP"]
+    AM --> PLAN["Propose SQL · review · approve"]
+    PLAN --> DB[("Shared database<br/>Data · permissions · business rules")]
 
-1. **Data MCP** — Discover accessible tables and columns, explain permissions, and read or modify records with the signed-in database user's permissions.
-2. **Administration MCP** — Propose changes to the real database schema and rules with an internal AI planner. An authorized administrator reviews the SQL and must explicitly approve it before anything changes.
+    TEAM["Purchasing · Sales · Finance"] --> UX["Individual apps and workflows"]
+    UX --> RUNTIME["Authenticated MCP client / trusted runtime"]
+    RUNTIME --> DM["Data MCP"]
+    DM --> DB
 
-**Current implementation:** Axiomony uses a Node.js Streamable HTTP MCP server and **PostgreSQL** as the authoritative database. PostgreSQL grants, row-level security, constraints, and triggers enforce the actual permissions and business logic. [Read the architecture overview](https://sjoerdvanderhoorn.github.io/axiomony/concepts.html).
+    DB --> ENF["Database enforces access, constraints and approvals"]
+```
 
-## Quick start
+The Axiomony server exposes two complementary MCP interfaces:
 
-Choose one of two Docker deployments:
+| Interface | Responsibility |
+| --- | --- |
+| **Administration MCP** | An internal AI planner prepares changes to actual database schema, privileges and rules. Administrators review the plan and explicitly approve execution. |
+| **Data MCP** | Users and their trusted applications discover accessible tables and read or modify records. The database rechecks their effective privileges and rules on every operation. |
+
+**No additional middleware is needed to own or duplicate the organization's business rules.** The MCP server remains the transport and management interface; the database is the source of truth. Browser-based apps still need a trusted, authenticated runtime to call Data MCP safely without embedding passwords in frontend JavaScript. That browser bridge is not currently included.
+
+**Technical implementation:** Node.js, Streamable HTTP MCP, and PostgreSQL. The current database uses native grants, row-level security, constraints and triggers. [Architecture and security details](https://sjoerdvanderhoorn.github.io/axiomony/concepts.html).
+
+## Installation
+
+Axiomony supports two Docker deployment modes:
 
 | Mode | Included services |
 | --- | --- |
-| **Standalone** | MCP server, REST server, PostgreSQL database, and Nginx HTTP server |
-| **External Database** | MCP server and REST server, connected to your existing database |
+| **Standalone** | MCP server, REST server, database and static HTTP server |
+| **External Database** | MCP and REST servers connected to an existing database |
 
-No separate demo stack, host startup scripts, or hardcoded passwords are required.
-
-### Configure
+Both modes are configured through `.env` and require strong, unique REST credentials. Standalone also requires an operator-chosen bootstrap database password. No default administrator password is provided.
 
 ```sh
 git clone https://github.com/sjoerdvanderhoorn/axiomony.git
 cd axiomony
 cp .env.example .env
+# Edit .env: set PGDATABASE, REST_AUTH_PASSWORD, REST_JWT_SECRET,
+# and POSTGRES_BOOTSTRAP_PASSWORD for Standalone.
 ```
 
-Edit `.env` before starting. **Both modes** require `PGDATABASE`, a strong `REST_AUTH_PASSWORD` for the restricted REST account, and a random `REST_JWT_SECRET` (at least 32 characters).
-
-- **Standalone:** Also set your own strong `POSTGRES_BOOTSTRAP_PASSWORD`. The initial administrator username is `platform_admin`. There is no default password; Compose passes your value to the database as a secret, **not to the MCP or REST container**.
-- **External Database:** Set `PGHOST`, `PGPORT`, `PGSSL`, and `PGSSLMODE`. Prepare the restricted `postgrest_authenticator` account in your existing database first, using the same password as `REST_AUTH_PASSWORD`. The [installation guide](https://sjoerdvanderhoorn.github.io/axiomony/getting-started.html) explains how.
-
-### Start
-
-**Standalone — all services:**
+**Standalone:**
 
 ```sh
 docker compose -f compose.yml -f compose.standalone.yml up -d --build
 ```
 
-**External Database — MCP and REST only:**
+**External Database** (configure connection details and initialize the restricted REST authenticator on your own database first):
 
 ```sh
 docker compose up -d --build
 ```
 
-**Check the MCP server:**
+Check the service:
 
 ```sh
 curl http://127.0.0.1:3000/health
 ```
 
-MCP runs at `http://127.0.0.1:3000/mcp`; REST at `http://127.0.0.1:3001/`. Standalone also serves static user-created pages at `http://127.0.0.1:8088/apps/...`.
+The MCP endpoint is `http://127.0.0.1:3000/mcp`. The REST compatibility endpoint is `http://127.0.0.1:3001/`. Standalone also serves user-published static files locally on port `8088`.
 
-**Important:** The bundled database stores credentials in a persistent volume. Changing `POSTGRES_BOOTSTRAP_PASSWORD` later does **not** rotate an existing database password. Update the database role explicitly instead. Never delete a populated volume just to reset credentials.
+See the [installation guide](https://sjoerdvanderhoorn.github.io/axiomony/getting-started.html) for environment variables, passwords, external database setup, and credential rotation. Changing a bootstrap secret in `.env` does not update an existing database volume's stored password.
 
-Every MCP request still authenticates using the **individual user's own database login**, not the bundled superuser or REST service account. The limited REST account is separate and must never be granted superuser privileges.
+## MCP tools
 
-> **Development use only.** The local `.env` contains secrets, and the PostgREST login password is passed in its container environment. Do not expose this prototype publicly; stronger authentication, production secrets management, HTTPS and integration tests remain necessary.
+The tools visible to each account depend on its actual database permissions and the chosen deployment mode. Core categories include:
 
-[Full installation and external role setup](https://sjoerdvanderhoorn.github.io/axiomony/getting-started.html).
+- **Discovery & explanations:** `whoami`, `list_tables`, `describe_table`, `explain_permissions`, `app_integration_guide`.
+- **Data operations:** `select_records`, `insert_record`, `update_records`, `delete_records`.
+- **Administration:** `inspect_database`, `manage_database`, `review_plan`, `implement_plan`, `cancel_plan`.
+- **Static publishing (Standalone):** `site_list`, `site_read_file`, `site_create_file`, `site_update_file`, `site_delete_file`, `site_delete_project`.
+- **Optional compatibility REST helpers:** `rest_api_guide`, `rest_relationships`, `generate_rest_request` (only when `REST_MCP_TOOLS=true`).
 
-## Connect an AI client
+The database, rather than the presence of a tool in an AI client, determines which operations an account is authorized to perform. Read the [complete tool reference](https://sjoerdvanderhoorn.github.io/axiomony/tools.html) and [connection guide](https://sjoerdvanderhoorn.github.io/axiomony/connect.html).
 
-Use an MCP client that supports local Streamable HTTP and the required HTTP Basic authentication.
+## Security considerations
 
-| Setting | Development value |
-| --- | --- |
-| Endpoint | `http://127.0.0.1:3000/mcp` |
-| Transport | Stateless Streamable HTTP (POST) |
-| Authentication | HTTP Basic with the user's PostgreSQL credentials |
-| Tools | Dynamically determined by database privileges |
+- **Permissions are database-enforced.** Applications cannot simply assign themselves more access than their authenticated database principal has. Stolen credentials and unsafe third-party integrations remain risks.
+- **The current MCP endpoint uses HTTP Basic with reusable database credentials.** Keep the service on a trusted local network; do not expose it directly to the internet. Publicly accessible deployments require a suitable authentication and session design.
+- **Browser apps need a trusted runtime.** Never place database passwords or API secrets in user-generated HTML or JavaScript. Static hosting does not provide authenticated data sessions.
+- **Administrative SQL requires review.** AI-generated migration plans are inspected and explicitly approved by an authorized administrator before execution; the planner and validator do not substitute for independent security review.
 
-You can check which tools a local account can access:
+See [architecture and security](https://sjoerdvanderhoorn.github.io/axiomony/concepts.html#security) and the [roadmap](ROADMAP.md) for current capabilities and planned improvements.
 
-~~~sh
-curl -sS -u platform_admin:'YOUR_PASSWORD' -H 'Accept: application/json, text/event-stream' -H 'Content-Type: application/json' -X POST http://127.0.0.1:3000/mcp -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
-~~~
+## Development
 
-Not all hosted AI assistants support the authentication method used in this prototype. [Read the client connection guide](https://sjoerdvanderhoorn.github.io/axiomony/connect.html).
+Node.js 22+ is required when running locally without Docker:
 
-## What works today?
-
-| Capability | Status |
-| --- | --- |
-| Discover accessible data models | Available |
-| Select, insert, update, and delete records | Available; enforced database permissions |
-| Explain grants, policies, and constraints | Available; explanations are best-effort |
-| Propose and explicitly approve database changes | Available; administrator-only and in-memory plans |
-| Publish user-owned static HTML/CSS/JS | Standalone mode; pages are publicly readable |
-| Legacy REST integration | Included for compatibility |
-| Secure hosted AI login and browser-to-MCP runtime | Not implemented |
-| Production-ready deployment and end-to-end verification | Not completed |
-
-Static hosting tools are available in **Standalone** mode. Legacy REST MCP helpers require `REST_MCP_TOOLS=true`. The tools each account sees depend on its permissions.
-
-## Documentation
-
-- [Installation](https://sjoerdvanderhoorn.github.io/axiomony/getting-started.html) — bundled and external database setup
-- [Connect an AI](https://sjoerdvanderhoorn.github.io/axiomony/connect.html) — transport, credentials, and client constraints
-- [MCP tool reference](https://sjoerdvanderhoorn.github.io/axiomony/tools.html) — available tools and eligibility
-- [Architecture & security](https://sjoerdvanderhoorn.github.io/axiomony/concepts.html) — permission enforcement and known limitations
-- [Roadmap](ROADMAP.md) — development priorities and future database research
-
-## Develop and contribute
-
-Node.js **22+** is required to run the server and tests without Docker:
-
-~~~sh
+```sh
 npm install
 npm test
-~~~
+```
 
-Automated tests do not yet provide complete Docker, database, or hosted-client integration coverage. Please [open an issue](https://github.com/sjoerdvanderhoorn/axiomony/issues) to discuss a feature or report a bug before submitting substantial changes.
-
-**Security:** Axiomony is not yet a production security boundary. Do not put secrets in generated frontend code or Git, deploy this prototype publicly, or use the bundled database superuser for ordinary work. Database permissions help contain untrusted interfaces, but compromised credentials remain dangerous. [Read more](https://sjoerdvanderhoorn.github.io/axiomony/concepts.html#security).
+Tests cover the Node.js behavior and Compose configuration, but do not establish end-to-end correctness across a running database, all containers and hosted AI clients. Please use [GitHub issues](https://github.com/sjoerdvanderhoorn/axiomony/issues) for feedback and proposals.
 
 ---
 

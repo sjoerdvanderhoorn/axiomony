@@ -8,7 +8,7 @@ Axiomony enforces access, data integrity, and business rules in the **database e
 
 **PostgreSQL only**: per-user PostgreSQL authentication, database grants, row-level security policies, constraints, triggers, functions, catalog introspection and natural-language SQL migration proposals with explicit human confirmation.
 
-The current release is a **development preview, not production-ready**. Authentication hardening, securely connected personal browser applications, migration safety, auditing and end-to-end Docker testing come first.
+Current priorities include authentication hardening, securely connected personal browser applications, migration safety, auditing and end-to-end Docker testing.
 
 ## Future database engines — research only
 
