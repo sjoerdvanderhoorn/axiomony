@@ -13,15 +13,15 @@
 <body>
 <a class="sr-only" href="#content">Skip to content</a>
 <header class="site-header"><nav class="nav container" aria-label="Axiomony"><a class="brand" href="index.html"><img class="brand-lockup" src="assets/axiomony-wordmark.svg" alt="Axiomony"></a></nav></header>
-<section class="page-intro" id="overview"><div class="container"><div class="eyebrow">Axiomony documentation</div><h1>Shared rules.<br>Individual interfaces.</h1><p>Axiomony provides an AI-accessible interface for defining the data, relationships, permissions and business rules of an organization <strong>inside the database itself</strong>. Individuals and teams can then create entirely different tools and workflows against that same foundation.</p></div></section><div class="container overview-layout">
-  <aside class="overview-sidebar sidebar" aria-label="Documentation navigation"><div class="sidebar-section"><strong>On this page</strong><div class="sidebar-links"><a href="#overview">Overview</a><a href="#principle">The principle</a><a href="#interfaces">Two MCP interfaces</a><a href="#data-authority">Rules belong to the database</a><a href="#example">An example: ACME</a><a href="#scope">Security boundaries</a></div></div><div class="sidebar-section sidebar-pages"><strong>Pages</strong><div class="sidebar-links"><a href="index.html" aria-current="page">Introduction</a><a href="getting-started.html">Installation</a><a href="connect.html">Connect an AI</a><a href="tools.html">MCP tools</a><a href="concepts.html">Architecture &amp; security</a><a href="https://github.com/sjoerdvanderhoorn/axiomony" target="_blank" rel="noopener noreferrer">GitHub</a></div></div></aside>
+<section class="page-intro" id="overview"><div class="container"><div class="eyebrow">Axiomony documentation</div><h1>Shared rules.<br>Individual interfaces.</h1><p>Axiomony is an MCP server for PostgreSQL. Use it to define the shared data, permissions and business rules of your organization, then create your own tools and workflows. Connect an existing database or use Standalone for a complete local installation.</p></div></section><div class="container overview-layout">
+  <aside class="overview-sidebar sidebar" aria-label="Documentation navigation"><div class="sidebar-section"><strong>On this page</strong><div class="sidebar-links"><a href="#overview">Overview</a><a href="#principle">The principle</a><a href="#interfaces">MCP capabilities</a><a href="#data-authority">Rules belong to the database</a><a href="#example">An example: ACME</a><a href="#scope">Security boundaries</a></div></div><div class="sidebar-section sidebar-pages"><strong>Pages</strong><div class="sidebar-links"><a href="index.html" aria-current="page">Introduction</a><a href="getting-started.html">Installation</a><a href="connect.html">Connect an AI</a><a href="tools.html">MCP tools</a><a href="concepts.html">Architecture &amp; security</a><a href="https://github.com/sjoerdvanderhoorn/axiomony" target="_blank" rel="noopener noreferrer">GitHub</a></div></div></aside>
   <main id="content" class="intro-content"><p>Conventional business applications bundle a data model with prescribed screens, flows and policies. Even a configurable product carries the vendor's design decisions. Axiomony separates the long-lived agreements of an organization from the short-lived interfaces people use to do their work.</p>
     <blockquote class="intro-quote">Standardize the data and the rules, not the user interface.</blockquote>
 
     <hr class="chapter-divider">
     <section id="principle">
       <h2>The principle</h2>
-      <p>A team member who understands a business process should be able to describe its data and rules to an AI assistant. Authorized administrators can inspect and approve the proposed changes. Axiomony translates these requests into real database objects—rather than storing parallel business rules in a separate application layer.</p>
+      <p>An administrator can describe the business to an AI assistant. Axiomony helps turn that description into PostgreSQL tables, relationships and enforceable rules. Authorized administrators can inspect and approve the proposed changes. Axiomony translates these requests into real database objects—rather than storing parallel business rules in a separate application layer.</p>
       <p>Once the shared model exists, an accountant, purchaser or sales representative can use their preferred tools and user experience. They don't need a common interface; they need common data and consistent permissions.</p>
       <ul class="summary-points">
         <li><strong>One governed data model</strong><span>Tables, relationships and business constraints stay together in the database.</span></li>
@@ -33,24 +33,21 @@
 
     <hr class="chapter-divider">
     <section id="interfaces">
-      <h2>Two MCP interfaces, one database</h2>
+      <h2>Three ways to work with one database</h2>
       <p>Axiomony distinguishes changes to the organization's shared model from ordinary work with its records.</p>
-      <div class="concept-diagram" role="img" aria-label="Business owners use administration MCP to review and apply database definitions. Individual apps use Data MCP to access the same database with their own user permissions.">
-        <div class="diagram-row">
-          <div class="diagram-cell"><strong>Process owner + AI</strong><span>Define data and rules</span></div>
-          <div class="diagram-arrow">→</div>
-          <div class="diagram-cell"><strong>Administration MCP</strong><span>Propose · review · approve</span></div>
-          <div class="diagram-arrow">→</div>
-          <div class="diagram-cell database"><strong>Shared database</strong><span>Schema · permissions · constraints</span></div>
+      <div class="concept-diagram" role="img" aria-label="Your AI assistant connects to Axiomony MCP, which can govern data and rules, use permitted data, and provide REST documentation for PostgreSQL.">
+        <div class="pipeline-node"><strong>Your AI assistant</strong></div>
+        <div class="pipeline-arrow" aria-hidden="true">↓</div>
+        <div class="pipeline-node"><strong>Axiomony MCP</strong></div>
+        <div class="pipeline-arrow" aria-hidden="true">↓</div>
+        <div class="pipeline-capabilities">
+          <div class="pipeline-node"><strong>Govern data &amp; rules</strong></div>
+          <div class="pipeline-node"><strong>Use permitted data</strong></div>
+          <div class="pipeline-node"><strong>Provide REST documentation</strong></div>
         </div>
-        <div class="diagram-row">
-          <div class="diagram-cell"><strong>Personal tools + AI</strong><span>Invoicing · Sales · Reports</span></div>
-          <div class="diagram-arrow">→</div>
-          <div class="diagram-cell"><strong>Data MCP</strong><span>Discover · read · write</span></div>
-          <div class="diagram-arrow">→</div>
-          <div class="diagram-cell database"><strong>The same database</strong><span>Enforces each user's access</span></div>
-        </div>
-        <p class="diagram-caption">MCP exposes capabilities and forwards authenticated operations. It does not become a second, competing source of business rules.</p>
+        <div class="pipeline-arrow" aria-hidden="true">↓</div>
+        <div class="pipeline-node database"><strong>PostgreSQL database</strong><span>Data · Access · Rules</span></div>
+        <p class="diagram-caption">The database enforces access rights and business rules whichever interface is used.</p>
       </div>
       <p><strong>Administration MCP</strong> accepts natural-language requests for changes to schema, roles and rules, prepares a proposed migration using an internal AI model, and requires explicit administrator approval.</p>
       <p><strong>Data MCP</strong> offers predictable, permission-aware tools to inspect and change records. It uses the authenticated database user's own credentials. The database remains authoritative if an application behaves incorrectly.</p>
@@ -61,7 +58,7 @@
       <h2>Rules belong to the database</h2>
       <p>Consider an invoice approval threshold. If invoices of EUR 500 or more require approval, that rule should not live only in a particular screen or in a vendor-specific workflow module. It should apply to every authorized operation, whether that operation comes from a mobile form, an AI client or an integration.</p>
       <p>The same applies to visibility and editing permissions: a self-created sales dashboard does not gain Finance's privileges simply by presenting a different UI. Native database permissions and rules are checked for each request.</p>
-      <p>This is what “without other middleware” means in Axiomony's design: <strong>no additional application-specific policy engine is needed to define the truth or enforce business rules</strong>. A trusted client/runtime is still needed to authenticate users and safely carry requests from browser-based applications; the current implementation does not include that browser bridge.</p>
+      <p>This is what “without other middleware” means in Axiomony's design: <strong>no additional application-specific policy engine is needed to define the truth or enforce business rules</strong>. AI-created applications can use the included REST server or a trusted Data MCP runtime. Browser clients must still authenticate securely and must never contain reusable database passwords.</p>
     </section>
 
     <hr class="chapter-divider">
