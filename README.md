@@ -35,28 +35,24 @@ Axiomony separates **the shared rules of the organization** from **the individua
 
 ## A minute with ACME
 
-This illustrated example follows a fictitious company, **ACME**, as it defines an accounting model for customers, suppliers, orders, invoices and payments. The database enforces access and approval rules, while Purchasing, Sales and Finance create separate interfaces with AI assistance.
+In this one-minute concept demo, an ACME administrator uses ChatGPT to define accounting data, purchasing and sales workflows, permissions and business rules, ending with a simplified ERD. Next, Purchasing builds a mobile invoice app in Claude, Sales builds a quotation tool in Gemini, and Finance creates a review dashboard in ChatGPT. Each experience uses the same governed database.
 
-![60-second Axiomony concept walkthrough: ACME defines its database and business rules, then Purchasing, Sales, and Finance build their own experiences](docs/assets/acme-walkthrough.gif)
+![60-second ACME software demo: ChatGPT creates a database and ERD, then Claude, Gemini, and ChatGPT build user-specific applications](docs/assets/acme-walkthrough.gif)
 
-*Concept illustration, not a live application recording. A secure browser-to-MCP runtime and external integrations require additional implementation.*
+[Watch or download the 60-second MP4 demo](docs/assets/acme-software-demo.mp4)
+
+*Concept animation, not a live application recording. Independently hosted browser apps still need an authenticated runtime to access Data MCP securely.*
 
 ## How Axiomony works
 
-GitHub renders the following **Mermaid diagram** directly from this README:
-
 ```mermaid
-flowchart TD
-    A["Process owner + AI assistant"] --> AM["Administration MCP"]
-    AM --> PLAN["Propose SQL · review · approve"]
-    PLAN --> DB[("Shared database<br/>Data · permissions · business rules")]
-
-    TEAM["Purchasing · Sales · Finance"] --> UX["Individual apps and workflows"]
-    UX --> RUNTIME["Authenticated MCP client / trusted runtime"]
-    RUNTIME --> DM["Data MCP"]
-    DM --> DB
-
-    DB --> ENF["Database enforces access, constraints and approvals"]
+flowchart TB
+    AI["Your AI assistant"] --> MCP["Axiomony MCP"]
+    MCP --> ADMIN["Govern data & rules<br/>(admin approval)"]
+    MCP --> DATA["Use permitted data<br/>(per-user access)"]
+    ADMIN --> DB[("Shared database<br/>Data · Access · Rules")]
+    DATA --> DB
+    DB --> UX["Your own experiences<br/>Forms · Reports · Workflows"]
 ```
 
 The Axiomony server exposes two complementary MCP interfaces:
