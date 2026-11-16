@@ -29,7 +29,7 @@ Changes to `.github/workflows/pages.yml` also trigger the publication workflow. 
 - `getting-started.html`: bundled/external installation and configuration
 - `connect.html`: MCP client connection examples
 - `tools.html`: 23 MCP tools, filters and permissions
-- `concepts.html`: architecture, security and roadmap link
+- `concepts.html`: architecture and security details
 - `assets/`: local SVG logo, favicon, CSS, JavaScript and `acme-walkthrough.gif` (60-second concept animation)
 - `../scripts/build_acme_walkthrough.py`: reproducible GIF generator (requires Pillow)
 
