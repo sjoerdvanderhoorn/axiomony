@@ -35,3 +35,7 @@
 .pipeline-capabilities{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:12px}
 .pipeline-capabilities .pipeline-node{width:100%;min-height:70px;padding:10px 8px}
 @media(max-width:720px){.pipeline-capabilities{gap:5px}.pipeline-capabilities .pipeline-node{padding:9px 6px}.pipeline-capabilities .pipeline-node strong{font-size:.77rem}}
+
+/* Full HD Acme demo: scale cleanly in the documentation column. */
+.walkthrough video{width:100%;height:auto;display:block;aspect-ratio:16/9;object-fit:contain;border-radius:6px;background:#f5f7fb}
+.walkthrough figcaption a{font-weight:600}
