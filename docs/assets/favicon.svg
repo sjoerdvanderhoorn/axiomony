@@ -1,11 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="16" fill="#09234c"/>
-  <path d="M32 8 53 20v24L32 56 11 44V20z" fill="none" stroke="#31c4bb" stroke-width="3"/>
-  <path d="M32 18 45 25v14L32 46 19 39V25z" fill="#87b9ee"/>
-  <path d="M32 18v28M19 25l13 8 13-8" fill="none" stroke="#09234c" stroke-width="3"/>
-  <circle cx="32" cy="6" r="4" fill="#2ac5c0"/>
-  <circle cx="56" cy="19" r="4" fill="#5d65d8"/>
-  <circle cx="56" cy="46" r="4" fill="#2ac5c0"/>
-  <circle cx="8" cy="19" r="4" fill="#5d65d8"/>
-  <circle cx="8" cy="46" r="4" fill="#2ac5c0"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Axiomony">
+  <title>Axiomony</title>
+  <style>path { stroke: #152524; } @media (prefers-color-scheme: dark) { path { stroke: #ffffff; } }</style>
+  <path d="M 65.321 13.302 A 47 47 0 0 1 106.698 54.679 M 106.698 65.321 A 47 47 0 0 1 65.321 106.698 M 54.679 106.698 A 47 47 0 0 1 13.302 65.321 M 13.302 54.679 A 47 47 0 0 1 54.679 13.302 M 60 19 V 101 M 19 60 H 101" fill="none" stroke-width="4.5" stroke-linecap="butt" stroke-linejoin="miter" />
 </svg>

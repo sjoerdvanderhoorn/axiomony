@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 112" width="700" height="112" role="img" aria-label="AXIOMONY">
+  <title>Axiomony — custom segmented lettering</title>
+  <path d="M 12 91 L 42 20 L 72 91" fill="none" stroke="#152524" stroke-width="2.9" stroke-linecap="butt" stroke-linejoin="miter" />
+  <path d="M 104 20 L 127 49 M 135 62 L 158 91 M 158 20 L 135 49 M 127 62 L 104 91" fill="none" stroke="#152524" stroke-width="2.9" stroke-linecap="butt" stroke-linejoin="miter" />
+  <path d="M 192 20 V 91" fill="none" stroke="#152524" stroke-width="2.9" stroke-linecap="butt" stroke-linejoin="miter" />
+  <path d="M 249.904 22.017 A 34 34 0 0 1 277.483 49.596 M 277.483 61.404 A 34 34 0 0 1 249.904 88.983 M 238.096 88.983 A 34 34 0 0 1 210.517 61.404 M 210.517 49.596 A 34 34 0 0 1 238.096 22.017" fill="none" stroke="#152524" stroke-width="2.9" stroke-linecap="butt" stroke-linejoin="miter" />
+  <path d="M 317 91 V 20 L 350 56 L 383 20 V 91" fill="none" stroke="#152524" stroke-width="2.9" stroke-linecap="butt" stroke-linejoin="miter" />
+  <path d="M 457.904 22.017 A 34 34 0 0 1 485.483 49.596 M 485.483 61.404 A 34 34 0 0 1 457.904 88.983 M 446.096 88.983 A 34 34 0 0 1 418.517 61.404 M 418.517 49.596 A 34 34 0 0 1 446.096 22.017" fill="none" stroke="#152524" stroke-width="2.9" stroke-linecap="butt" stroke-linejoin="miter" />
+  <path d="M 517 91 V 20 L 544 49 M 552 61 L 580 91 V 20" fill="none" stroke="#152524" stroke-width="2.9" stroke-linecap="butt" stroke-linejoin="miter" />
+  <path d="M 619 20 L 651 56 L 683 20 M 651 56 V 91" fill="none" stroke="#152524" stroke-width="2.9" stroke-linecap="butt" stroke-linejoin="miter" />
+</svg>

@@ -1,5 +1,7 @@
 <div align="center">
-  <img src="docs/assets/axiomony-logo.png" alt="Axiomony" width="340">
+  <img src="docs/assets/axiomony-symbol.svg" alt="Axiomony symbol" width="82" height="82">
+  <br>
+  <img src="docs/assets/axiomony-wordmark.svg" alt="AXIOMONY" width="350">
 
   <h3>Shared rules. Individual freedom.</h3>
 

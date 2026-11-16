@@ -8,4 +8,5 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
 
 /* Shared Axiomony brand lockup used in the navigation and footer. */
-.brand-lockup{display:block;width:155px;height:auto;max-width:36vw;object-fit:contain}
+.brand-lockup{display:block;width:190px;height:auto;max-width:42vw;object-fit:contain}
+.hero-brand-symbol{display:inline-block;width:26px;height:26px;vertical-align:middle;flex:none;margin-right:5px}
