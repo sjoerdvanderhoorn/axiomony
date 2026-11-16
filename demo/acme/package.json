@@ -1,0 +1,12 @@
+{
+  "name": "@axiomony/acme-demo-renderer",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic, editable Full HD Acme walkthrough renderer",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "devDependencies": {
+    "skia-canvas": "^3.0.8"
+  }
+}

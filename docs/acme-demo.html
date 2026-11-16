@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Axiomony's editable, animated Acme walkthrough. Preview the complete demo and jump to any scene.">
+  <title>Acme walkthrough · Axiomony</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <style>
+    :root{color-scheme:light;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#263248;background:#f7f8fc}
+    *{box-sizing:border-box}body{margin:0;padding:28px 20px 48px}main{max-width:1280px;margin:auto}
+    header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:26px}
+    header img{width:160px;height:auto}a{color:#4e5e91}h1{font-size:1.5rem;letter-spacing:-.03em;margin:0 0 5px}
+    p{color:#69768c;line-height:1.5;margin:0} .player{overflow:hidden;border:1px solid #dce3ee;border-radius:16px;box-shadow:0 14px 40px #1d2e4e17;background:#fff}
+    canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}.controls{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin:18px 0}
+    button{border:1px solid #D6DFEC;background:#fff;color:#334566;padding:11px 16px;border-radius:8px;cursor:pointer;font-weight:600}
+    button:hover{background:#f0f3fa}.primary{color:#fff;background:#4e5e91;border-color:#4e5e91;min-width:94px}
+    input[type=range]{flex:1;min-width:220px;accent-color:#4e5e91}#time{font-variant-numeric:tabular-nums;color:#69768c;min-width:90px;font-size:.95rem}
+    .chapters{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.chapters button{font-size:.86rem}.chapters button.active{background:#e9eef8;border-color:#bfcce6;color:#3c507d}
+    .note{font-size:.88rem;margin-top:24px}.note code{background:#edf0f8;padding:2px 5px;border-radius:4px}
+    @media(max-width:650px){body{padding:16px 12px}header{align-items:flex-start;flex-direction:column}h1{font-size:1.25rem}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div><h1>Acme · AI-built business software</h1><p>One shared database. Three independent experiences.</p></div>
+    <a href="index.html"><img src="assets/axiomony-wordmark.svg" alt="Axiomony"></a>
+  </header>
+  <div class="player"><canvas id="demo" width="1600" height="900" aria-label="Animated demonstration of database setup in ChatGPT and custom Purchasing, Sales and Finance applications"></canvas></div>
+  <div class="controls">
+    <button class="primary" id="play" type="button">Play</button>
+    <input id="scrub" type="range" min="0" max="60" step="0.01" value="0" aria-label="Demo timeline">
+    <span id="time">00:00 / 01:00</span>
+    <button id="restart" type="button">Restart</button>
+  </div>
+  <div class="chapters" id="chapters" aria-label="Jump to a scene"></div>
+  <p class="note">Illustrative animation, not a recording of a live product. All frames are generated from <code>demo/acme.js</code>; the same source is used to export the high-resolution video.</p>
+</main>
+<script type="module">
+import {STORY,renderFrame} from './demo/acme.js';
+const canvas=document.getElementById('demo'),ctx=canvas.getContext('2d');
+const play=document.getElementById('play'),scrub=document.getElementById('scrub'),time=document.getElementById('time'),restart=document.getElementById('restart'),chapters=document.getElementById('chapters');
+let seconds=0,playing=false,last=0;
+const fmt=t=>`${String(Math.floor(t/60)).padStart(2,'0')}:${String(Math.floor(t%60)).padStart(2,'0')}`;
+function display(){renderFrame(ctx,seconds,{width:canvas.width,height:canvas.height});scrub.value=String(seconds);time.textContent=`${fmt(seconds)} / ${fmt(STORY.duration)}`;for(const b of chapters.querySelectorAll('button'))b.classList.toggle('active',Number(b.dataset.start)<=seconds&&seconds<Number(b.dataset.end));}
+function tick(now){if(playing){if(last)seconds=Math.min(STORY.duration,seconds+(now-last)/1000);last=now;if(seconds>=STORY.duration){playing=false;play.textContent='Play';}display();}requestAnimationFrame(tick);}
+play.addEventListener('click',()=>{if(seconds>=STORY.duration)seconds=0;playing=!playing;last=0;play.textContent=playing?'Pause':'Play';display();});
+restart.addEventListener('click',()=>{seconds=0;last=0;display();});
+scrub.addEventListener('input',()=>{seconds=Number(scrub.value);last=0;display();});
+for(const p of STORY.phases){const b=document.createElement('button');b.type='button';b.dataset.start=p.start;b.dataset.end=p.end;b.textContent=p.label.slice(4).replace(/_/g,' ');b.addEventListener('click',()=>{seconds=p.start;last=0;display();});chapters.appendChild(b);}
+display();requestAnimationFrame(tick);
+</script>
+</body>
+</html>
