@@ -32,8 +32,7 @@ Changes to `.github/workflows/pages.yml` also trigger the publication workflow. 
 - `concepts.html`: architecture and security details
 - `acme-demo.html` and `demo/acme.js`: interactive, editable JavaScript walkthrough
 - `assets/acme-software-demo.mp4`: Full HD 1920×1080, 30 fps example video
-- `assets/acme-walkthrough.gif`: compact animated GitHub README preview
-- `assets/acme-poster.webp`: lightweight video poster
+- `assets/acme-poster.webp`: clickable README video preview
 - `../demo/acme/render.mjs`: reproducible Node.js + FFmpeg video and GIF export
 
 This public documentation website does **not** host the MCP service. Do not publish secrets, passwords, API tokens, sensitive data or customer records in `docs/`. Static pages and assets are publicly visible.

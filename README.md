@@ -31,10 +31,12 @@ Now the employees take over. Someone in **Purchasing** opens Claude on their pho
 They all get different interfaces—without having to build three different business backends. Their tools use the same PostgreSQL data, permissions, and workflows.
 
 <p align="center">
-  <img src="docs/assets/acme-walkthrough.gif" alt="Acme example: an administrator defines the shared database in ChatGPT, then Purchasing, Sales and Finance create their own applications" width="900">
+  <a href="https://sjoerdvanderhoorn.github.io/axiomony/assets/acme-software-demo.mp4">
+    <img src="docs/assets/acme-poster.webp" alt="Play the 60-second Acme software demo in Full HD (MP4)" width="900">
+  </a>
 </p>
 
-<p align="center"><sub>Illustrative one-minute concept animation · Rendered from editable JavaScript, 1920 × 1080 at 30 fps.</sub></p>
+<p align="center"><sub>Full HD MP4 · 60 seconds · Rendered from editable JavaScript.</sub></p>
 
 <p align="center"><a href="https://sjoerdvanderhoorn.github.io/axiomony/acme-demo.html">Explore the interactive demo</a> · <a href="demo/acme/README.md">Edit the animation and render a new video</a></p>
 
