@@ -21,7 +21,7 @@ services:
       PLAN_TTL_MINUTES: ${PLAN_TTL_MINUTES:-20}
       REST_ENABLED: 'true'
       REST_JWT_SECRET_FILE: /run/secrets/rest_jwt_secret
-      REST_MCP_TOOLS: ${REST_MCP_TOOLS:-false}
+      REST_MCP_TOOLS: ${REST_MCP_TOOLS:-true}
       REST_PUBLIC_URL: ${REST_PUBLIC_URL:-http://localhost:3001}
       REST_TOKEN_URL: ${REST_TOKEN_URL:-http://localhost:3000/auth/token}
       REST_EXPOSED_SCHEMAS: ${REST_EXPOSED_SCHEMAS:-public}
