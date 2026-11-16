@@ -10,17 +10,17 @@
 
 **An MCP server for PostgreSQL that lets AI assistants set up a shared business database and help people create their own tools.** The database—not a custom application backend—enforces permissions and business rules.
 
+> Up until now, AI has been very good at making tools for individuals that however don't adapt well to business processes. It has also been very good at assisting developers building software, which by the nature of generalization, does not adapt very well to individual use cases. Axiomony brings AI to a new level by giving individual users freedom to create their own apps that then securely connect to a database that represents the rules and flows of the shared business processes.
+
 **Axiomony points to the next evolution of AI:** agents that help everyone work with shared business data through their own applications, making much of traditional custom software development unnecessary.
 
 ## The concept
 
 Instead of commissioning one large application for everyone, start by telling an AI assistant how your organization works. Through Axiomony, an administrator can define the tables, relationships, access rights, and rules in **PostgreSQL**. The administrator reviews proposed changes before they are applied.
 
-After that, each person can ask ChatGPT, Claude, Gemini, or another compatible AI assistant to create a tool that fits their job. They can work with their data through Axiomony's **Data MCP**, or build an application using **REST documentation** and the included REST server. Both routes rely on the same database permissions and rules.
-
 **No second set of business rules needs to be maintained in application middleware.**
 
-> Up until now, AI has been very good at making tools for individuals that however don't adapt well to business processes. It has also been very good at assisting developers building software, which by the nature of generalization, does not adapt very well to individual use cases. Axiomony brings AI to a new level by giving individual users freedom to create their own apps that then securely connect to a database that represents the rules and flows of the shared business processes.
+After that, each person can ask ChatGPT, Claude, Gemini, or another compatible AI assistant to create a tool that fits their job. They can work with their data through Axiomony's **Data MCP**, or build an application using **REST documentation** and the included REST server. Both routes rely on the same database permissions and rules.
 
 ## Example
 
