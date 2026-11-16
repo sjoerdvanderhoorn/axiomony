@@ -46,9 +46,7 @@ flowchart TB
     MCP --> DOCS["Provide REST documentation"]
     ADMIN --> DB[("PostgreSQL database<br/>Data · Access · Rules")]
     DATA --> DB
-    DOCS --> APP["AI-built application"]
-    APP --> REST["REST server (PostgREST)"]
-    REST --> DB
+    DOCS --> DB
     DB --> UX["Individual tools & workflows"]
 ```
 
