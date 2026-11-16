@@ -25,3 +25,13 @@
   .overview-sidebar .sidebar-links a,.sidebar .sidebar-links a{display:inline-block;flex:none;border-left:0;border-bottom:2px solid transparent;padding:8px 10px}
   .overview-sidebar .sidebar-links a:hover,.sidebar .sidebar-links a:hover,.overview-sidebar .sidebar-links a[aria-current="page"],.sidebar .sidebar-links a[aria-current="page"]{border-left-color:transparent;border-bottom-color:var(--accent)}
 }
+
+/* Compact three-capability diagram shared by the introduction and README. */
+.pipeline-node{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:min(100%,300px);min-height:48px;margin-inline:auto;padding:11px 14px;text-align:center;background:#fff;border:1px solid #d7deea;border-radius:8px}
+.pipeline-node strong{font-weight:680;font-size:.9rem;color:var(--heading)}
+.pipeline-node span{font-size:.77rem;color:var(--muted)}
+.pipeline-node.database{background:#eff2fb;border-color:#c9d1eb}
+.pipeline-arrow{text-align:center;color:#8490ab;line-height:1.4;margin:5px 0;font-size:1.15rem}
+.pipeline-capabilities{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:12px}
+.pipeline-capabilities .pipeline-node{width:100%;min-height:70px;padding:10px 8px}
+@media(max-width:720px){.pipeline-capabilities{gap:5px}.pipeline-capabilities .pipeline-node{padding:9px 6px}.pipeline-capabilities .pipeline-node strong{font-size:.77rem}}
