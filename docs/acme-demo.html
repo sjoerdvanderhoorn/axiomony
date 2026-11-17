@@ -38,7 +38,7 @@
   <p class="note">Illustrative animation, not a recording of a live product. All frames are generated from <code>demo/acme.js</code>; the same source is used to export the high-resolution video.</p>
 </main>
 <script type="module">
-import {STORY,renderFrame} from './demo/acme.js?v=68d968f';
+import {STORY,renderFrame,prepareAssets} from './demo/acme.js?v=svg-wordmark-20261117';
 const canvas=document.getElementById('demo'),ctx=canvas.getContext('2d');
 const play=document.getElementById('play'),scrub=document.getElementById('scrub'),time=document.getElementById('time'),restart=document.getElementById('restart'),chapters=document.getElementById('chapters');
 let seconds=0,playing=false,last=0;
@@ -49,6 +49,7 @@ play.addEventListener('click',()=>{if(seconds>=STORY.duration)seconds=0;playing=
 restart.addEventListener('click',()=>{seconds=0;last=0;display();});
 scrub.addEventListener('input',()=>{seconds=Number(scrub.value);last=0;display();});
 for(const p of STORY.phases){const b=document.createElement('button');b.type='button';b.dataset.start=p.start;b.dataset.end=p.end;b.textContent=p.label.slice(4).replace(/_/g,' ');b.addEventListener('click',()=>{seconds=p.start;last=0;display();});chapters.appendChild(b);}
+await prepareAssets();
 display();requestAnimationFrame(tick);
 </script>
 </body>

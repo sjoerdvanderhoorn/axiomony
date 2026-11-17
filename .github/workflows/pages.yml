@@ -6,6 +6,9 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/pages.yml'
+  workflow_run:
+    workflows: [Render Acme demo video]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -19,6 +22,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -26,6 +30,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

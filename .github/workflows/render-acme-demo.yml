@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'docs/demo/acme.js'
+      - 'docs/assets/axiomony-wordmark.svg'
       - 'demo/acme/**'
       - '.github/workflows/render-acme-demo.yml'
   workflow_dispatch:
@@ -29,11 +30,11 @@ jobs:
           node-version: '22'
       - name: Install video encoder and rendering dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
           npm --prefix demo/acme install --no-audit --no-fund
       - name: Check JavaScript syntax
         run: node --check docs/demo/acme.js
+      - name: Verify labels and SVG branding
+        run: npm --prefix demo/acme test
       - name: Render the same animation used by the interactive preview
         run: npm --prefix demo/acme run render
       - name: Commit updated video and poster to GitHub

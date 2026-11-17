@@ -47,6 +47,22 @@ export const STORY = {
   },
 };
 
+// Both runtimes load this exact SVG before rendering any frames.
+export const WORDMARK_URL = new URL('../assets/axiomony-wordmark.svg', import.meta.url);
+let wordmark;
+export async function prepareAssets(loadImage = url => new Promise((resolve, reject) => {
+  const image = new Image();
+  image.onload = () => resolve(image);
+  image.onerror = () => reject(new Error(`Unable to load wordmark: ${url}`));
+  image.src = url.href;
+})) {
+  wordmark = await loadImage(WORDMARK_URL);
+}
+function drawWordmark(ctx,x,y,width){
+  if(!wordmark)throw new Error('Call prepareAssets() before renderFrame().');
+  ctx.drawImage(wordmark,x,y,width,width*112/700);
+}
+
 const C = STORY.colors;
 const FONT = 'Inter, "Segoe UI", Arial, sans-serif';
 const clamp = (x, a=0, b=1) => Math.min(b, Math.max(a, x));
@@ -95,9 +111,7 @@ function brandMark(ctx,x,y,r=16,color=C.brand){
   stroke(ctx,x-r+4,y,x+r-4,y,color,2);stroke(ctx,x,y-r+4,x,y+r-4,color,2);ctx.restore();
 }
 function topBar(ctx,t,phase){
-  brandMark(ctx,78,48,20);text(ctx,'AXIOMONY',111,33,20,C.ink,700);
-  text(ctx,'ACME  /  AI-BUILT BUSINESS TOOLS',280,36,15,C.muted,600);
-  pill(ctx,'CONCEPT DEMO',1214,28,155,{bg:'#E8EEF8',color:C.brand,border:'#D9E2F2',size:13});
+  brandMark(ctx,78,48,20);drawWordmark(ctx,111,29,190);
   text(ctx,`${pad(t/60)}:${pad(t%60)}  /  01:00`,1450,36,16,C.muted,600);
   const x=74,w=1452,y=84;
   round(ctx,x,y,w,4,2,'#E2E7F0');
@@ -146,7 +160,7 @@ function chatSidebar(ctx,x,y,w,h,client,accent){
     round(ctx,x+14,y+205+i*55,w-28,44,9,i===0?'#E9EDF6':'#F7F8FB');
     text(ctx,v,x+27,y+218+i*55,14,i===0?C.ink:C.muted,i===0?600:400);
   }
-  circle(ctx,x+34,y+h-36,15,'#DDE5EF');text(ctx,'Acme workspace',x+61,y+h-47,14,C.muted,550);
+  circle(ctx,x+34,y+h-36,15,'#DDE5EF');
 }
 function message(ctx,x,y,w,{who='user',lines='',accent=C.chatgpt,opacity=1,typingStart=null,now=0,size=18,bg=null}={}){
   if(opacity<=0)return;
@@ -247,7 +261,7 @@ function purchasingScreen(ctx,t){
  ctx.save();ctx.translate(-offset,0);
  round(ctx,sx+0,sy+36,sw,58,0,'#FFF8F4');
  circle(ctx,sx+32,sy+66,14,C.claude);text(ctx,'Claude',sx+58,sy+50,20,C.text,700);
- text(ctx,'Acme workspace',sx+25,sy+118,16,C.muted,600);
+
  message(ctx,sx+20,sy+158,sw-40,{lines:STORY.conversations.purchasing.prompt,who:'user',now:local,typingStart:0.65,size:16,opacity:enter(local,.5,.3)});
  message(ctx,sx+20,sy+279,sw-40,{lines:STORY.conversations.purchasing.reply,accent:C.claude,bg:'#FFF0E8',size:16,opacity:enter(local,3.3,.6)});
  round(ctx,sx+20,sy+550,sw-40,58,16,'#FFF','#E8DED9');text(ctx,'Message Claude…',sx+35,sy+569,16,C.muted);
@@ -380,7 +394,7 @@ function salesScene(ctx,t){
  round(ctx,x,ly,leftWidth,rh,0,'#F9FAFF');
  stroke(ctx,x+leftWidth,ly,x+leftWidth,ly+rh,C.border);
  circle(ctx,x+42,ly+42,16,C.gemini);text(ctx,'Gemini',x+70,ly+27,21,C.text,700);
- text(ctx,'Acme · Sales',x+29,ly+91,15,C.muted,600);
+
  const msgWidth=lerp(560,416,split);
  message(ctx,x+24,ly+137,msgWidth,{lines:STORY.conversations.sales.prompt,who:'user',now:local,typingStart:.75,size:16,opacity:enter(local,.5,.45)});
  message(ctx,x+24,ly+258,msgWidth,{lines:STORY.conversations.sales.reply,accent:C.gemini,bg:'#ECEEFF',size:16,opacity:enter(local,3.1,.6)});
@@ -438,7 +452,7 @@ function financeScene(ctx,t){
  round(ctx,x,ly,leftWidth,rh,0,'#F8FAFC');
  stroke(ctx,x+leftWidth,ly,x+leftWidth,ly+rh,C.border);
  circle(ctx,x+39,ly+44,16,C.chatgpt);text(ctx,'ChatGPT',x+70,ly+31,21,C.ink,700);
- text(ctx,'Finance · Acme workspace',x+27,ly+96,15,C.muted,600);
+
  const msgWidth=lerp(560,342,split);
  message(ctx,x+24,ly+150,msgWidth,{who:'user',lines:STORY.conversations.finance.prompt,now:local,typingStart:.7,size:16,opacity:enter(local,.5,.35)});
  message(ctx,x+24,ly+273,msgWidth,{who:'assistant',lines:STORY.conversations.finance.reply,accent:C.chatgpt,bg:'#E6F5ED',size:16,opacity:enter(local,2.5,.7)});
@@ -471,11 +485,11 @@ function finalScene(ctx,t){
    stroke(ctx,800,622,800,643,'#B9C7DF',2);
    round(ctx,dbX,dbY,480,97,17,'#E9EFF8','#CBD7E9');
    brandMark(ctx,dbX+48,dbY+47,23,C.brand);
-   text(ctx,'ACME · PostgreSQL',dbX+88,dbY+24,24,C.ink,750);
+   text(ctx,'ACME',dbX+88,dbY+24,24,C.ink,750);
    text(ctx,'Shared records  ·  Permissions  ·  Rules',dbX+88,dbY+59,16,C.muted,550);
   });
-  text(ctx,'AXIOMONY',800,796,17,C.brand,750,'center');
-  footer(ctx,'Acme · Three teams, three experiences','One shared database');
+  drawWordmark(ctx,690,785,220);
+  footer(ctx,'Acme · Three teams, three experiences','');
 }
 const paint={database:adminScene,purchasing:purchasingScreen,sales:salesScene,finance:financeScene,final:finalScene};
 /** Render a frame for absolute time `seconds` (0 .. 60). Can be called at any FPS. */

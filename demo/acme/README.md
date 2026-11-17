@@ -17,7 +17,7 @@ python3 -m http.server 8080 --directory docs
 
 ## Re-render the media
 
-Prerequisites: Node.js 22+, FFmpeg on `PATH`, and npm.
+Prerequisites: Node.js 22+ and npm. The encoder is installed with the rendering dependencies.
 
 ```sh
 npm --prefix demo/acme install
@@ -53,3 +53,6 @@ The interactive player and exported video use exactly the **same source function
 This is an **illustrative concept video**, not a live product recording. No external AI APIs are called by the animation.
 
 The animation uses drawn UI-style mockups labeled ChatGPT, Claude, and Gemini. Brand names are used descriptively; the walkthrough is not affiliated with those providers.
+The browser player and exporter both await `prepareAssets()` to load the exact `docs/assets/axiomony-wordmark.svg`. The wordmark is drawn as an image, never recreated with a font. Re-render all three media files after changing the animation or wordmark.
+
+Run `npm --prefix demo/acme test` to check removed labels and SVG usage across all scenes. GitHub Pages deploys again after the render workflow completes, so regenerated media committed by the workflow is published too.
