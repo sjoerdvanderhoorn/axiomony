@@ -5,10 +5,11 @@
   "description": "Deterministic, editable Full HD Acme walkthrough renderer",
   "scripts": {
     "render": "node render.mjs",
-    "test": "node --test render.test.mjs"
+    "test": "node --test check-render.mjs"
   },
   "devDependencies": {
     "ffmpeg-static": "^5.3.0",
     "skia-canvas": "^3.0.8"
   }
 }
+
