@@ -32,13 +32,9 @@ They all get different interfaces—without having to build three different busi
 
 <p align="center">
   <a href="https://sjoerdvanderhoorn.github.io/axiomony/assets/acme-software-demo.mp4">
-    <img src="docs/assets/acme-poster.webp" alt="Play the 60-second Acme software demo in Full HD (MP4)" width="900">
+    <img src="docs/assets/acme-walkthrough.gif" alt="Watch the animated Acme walkthrough: ChatGPT sets up a shared database, then Purchasing, Sales and Finance create their own tools" width="900">
   </a>
 </p>
-
-<p align="center"><sub>Full HD MP4 · 60 seconds · Rendered from editable JavaScript.</sub></p>
-
-<p align="center"><a href="https://sjoerdvanderhoorn.github.io/axiomony/acme-demo.html">Explore the interactive demo</a> · <a href="demo/acme/README.md">Edit the animation and render a new video</a></p>
 
 ## How Axiomony works
 
