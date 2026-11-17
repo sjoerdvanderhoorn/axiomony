@@ -1,0 +1,47 @@
+name: Render Acme demo video
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/demo/acme.js'
+      - 'demo/acme/**'
+      - '.github/workflows/render-acme-demo.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: render-acme-demo
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install video encoder and rendering dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          npm --prefix demo/acme install --no-audit --no-fund
+      - name: Check JavaScript syntax
+        run: node --check docs/demo/acme.js
+      - name: Render the same animation used by the interactive preview
+        run: npm --prefix demo/acme run render
+      - name: Commit updated video and poster to GitHub
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/assets/acme-software-demo.mp4 docs/assets/acme-poster.webp docs/assets/acme-walkthrough.gif
+          if ! git diff --cached --quiet; then
+            git commit -m "Render updated Acme walkthrough video"
+            git push
+          fi
