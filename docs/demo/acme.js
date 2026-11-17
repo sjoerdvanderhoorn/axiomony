@@ -70,7 +70,19 @@ const ease = x => { x = clamp(x); return x*x*(3-2*x); };
 const enter = (t, at, length=.65) => ease((t-at)/length);
 const lerp = (a,b,x) => a+(b-a)*x;
 const alphaAt = (t,start,end) => enter(t,start,.45)*(1-enter(t,end-.55,.55));
-const pad = n => String(Math.floor(n)).padStart(2,'0');
+// Button geometry is shared by the UI and the cursor's click targets.
+const buttons = {
+  migration: (x,y) => ({x:x+23,y:y+541,w:441,h:53}),
+  purchase: (x,y,w) => ({x:x+24,y:y+587,w:w-48,h:48}),
+  sales: (x,y,w,h) => ({x:x+w-245,y:y+h-70,w:215,h:50}),
+  review: (x,y,w) => ({x:x+w-145,y:y+292,w:115,h:33}),
+  match: (x,y,w) => ({x:x+w-155,y:y+563,w:122,h:33}),
+};
+const center = box => ({x:box.x+box.w/2,y:box.y+box.h/2});
+function cursorTo(ctx,from,target,progress,click=0){
+  const to=center(target);
+  cursor(ctx,lerp(from.x,to.x,progress),lerp(from.y,to.y,progress),click);
+}
 
 function font(ctx,size=20,weight=400){ctx.font=`${weight} ${size}px ${FONT}`;}
 function text(ctx,string,x,y,size=20,color=C.text,weight=400,align='left'){
@@ -90,7 +102,7 @@ function pill(ctx,label,x,y,w,{bg='#EDF1F7',color=C.muted,border=null,size=15}={
 }
 function shadow(ctx,blur=24,opacity=.11){ctx.shadowColor=`rgba(21,37,64,${opacity})`;ctx.shadowBlur=blur;ctx.shadowOffsetY=10;}
 function cursor(ctx,x,y,click=0){
-  if(click>0){ctx.save();ctx.globalAlpha=.33*(1-clamp(click));ctx.beginPath();ctx.arc(x+6,y+7,8+click*24,0,Math.PI*2);ctx.strokeStyle=C.blue;ctx.lineWidth=3;ctx.stroke();ctx.restore();}
+  if(click>0){ctx.save();ctx.globalAlpha=.33*(1-clamp(click));ctx.beginPath();ctx.arc(x,y,8+click*24,0,Math.PI*2);ctx.strokeStyle=C.blue;ctx.lineWidth=3;ctx.stroke();ctx.restore();}
   ctx.save();ctx.translate(x,y);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,29);ctx.lineTo(7,22);ctx.lineTo(15,36);ctx.lineTo(22,32);ctx.lineTo(14,19);ctx.lineTo(25,19);ctx.closePath();ctx.fillStyle='#FFF';ctx.fill();ctx.strokeStyle='#202D40';ctx.lineWidth=2;ctx.stroke();ctx.restore();
 }
 function typed(ctx,string,x,y,start,now,{size=19,color=C.text,weight=400,speed=35,line=31,showCursor=true}={}){
@@ -112,7 +124,6 @@ function brandMark(ctx,x,y,r=16,color=C.brand){
 }
 function topBar(ctx,t,phase){
   brandMark(ctx,78,48,20);drawWordmark(ctx,111,29,190);
-  text(ctx,`${pad(t/60)}:${pad(t%60)}  /  01:00`,1450,36,16,C.muted,600);
   const x=74,w=1452,y=84;
   round(ctx,x,y,w,4,2,'#E2E7F0');
   round(ctx,x,y,w*clamp(t/STORY.duration),4,2,C.brand);
@@ -188,13 +199,13 @@ function adminScene(ctx,t){
   const bx=x+246,by=y+65;
   text(ctx,'Design the Acme database',bx+24,by+2,25,C.text,700);
   text(ctx,'Conversation  /  Administration MCP',bx+24,by+40,14,C.muted);
-  stroke(ctx,bx+20,by+79,bx+598,by+79,C.border);
+  stroke(ctx,bx+20,by+67,bx+598,by+67,C.border);
   const msgX=bx+28;
-  message(ctx,msgX,by+102,540,{who:'user',lines:STORY.conversations.database.initial,now:t,typingStart:1.5,opacity:enter(t,1.3,.4)});
-  message(ctx,msgX,by+204,540,{who:'assistant',lines:STORY.conversations.database.firstReply,accent:C.chatgpt,opacity:enter(t,5.1,.7)});
-  message(ctx,msgX,by+306,540,{who:'user',lines:STORY.conversations.database.rules,now:t,typingStart:7.7,opacity:enter(t,7.5,.6)});
-  message(ctx,msgX,by+408,540,{who:'assistant',lines:STORY.conversations.database.lastReply,accent:C.chatgpt,opacity:enter(t,12.2,.8)});
-  const inputY=by+551;
+  message(ctx,msgX,by+86,540,{who:'user',lines:STORY.conversations.database.initial,now:t,typingStart:1.5,opacity:enter(t,1.3,.4)});
+  message(ctx,msgX,by+209,540,{who:'assistant',lines:STORY.conversations.database.firstReply,accent:C.chatgpt,opacity:enter(t,5.1,.7)});
+  message(ctx,msgX,by+332,540,{who:'user',lines:STORY.conversations.database.rules,now:t,typingStart:7.7,opacity:enter(t,7.5,.6)});
+  message(ctx,msgX,by+455,540,{who:'assistant',lines:STORY.conversations.database.lastReply,accent:C.chatgpt,opacity:enter(t,12.2,.8)});
+  const inputY=by+573;
   round(ctx,msgX,inputY,540,56,13,'#FFFFFF','#E2E6EE');text(ctx,'Ask a follow-up…',msgX+20,inputY+18,17,'#9AA6B7');
   circle(ctx,msgX+506,inputY+28,16,'#E8EDF7');text(ctx,'↑',msgX+497,inputY+13,23,C.brand,650);
   const right=x+867;
@@ -229,13 +240,15 @@ function adminScene(ctx,t){
     nodes.forEach(n=>{const p=coords(n.x,n.y);erdNode(ctx,p.x,p.y,206,75,n.label,t,n.at);});
   });
   fadeDraw(ctx,enter(t,15.4,.7),()=>{
-    round(ctx,right+23,by+541,441,53,10,t>16?'#E6F5EE':'#EDEFFC');
-    text(ctx,t>16?'✓  Database schema applied':'Review migration · 8 tables · 4 access policies',right+43,by+553,14,t>16?C.green:C.brand,650);
+    const button=buttons.migration(right,by);
+    round(ctx,button.x,button.y,button.w,button.h,10,t>=16?'#E6F5EE':'#EDEFFC');
+    text(ctx,t>=16?'✓  Database schema applied':'Review migration · 8 tables · 4 access policies',right+43,by+553,14,t>=16?C.green:C.brand,650);
   });
   ctx.restore();
   }
   if(t>=14.2&&t<=17.2){
-    const p=ease((t-14.2)/1.5);cursor(ctx,lerp(right+420,right+275,p),lerp(by+488,by+563,p),t>15.7&&t<16.7?(t-15.7):0);
+    const p=ease((t-14.2)/1.6);
+    cursorTo(ctx,{x:right+420,y:by+488},buttons.migration(right,by),p,t>=16&&t<16.8?(t-16)/.8:0);
   }
   ctx.restore();
   footer(ctx,'Acme administrator · ChatGPT', 'Shared schema and permissions');
@@ -262,8 +275,8 @@ function purchasingScreen(ctx,t){
  round(ctx,sx+0,sy+36,sw,58,0,'#FFF8F4');
  circle(ctx,sx+32,sy+66,14,C.claude);text(ctx,'Claude',sx+58,sy+50,20,C.text,700);
 
- message(ctx,sx+20,sy+158,sw-40,{lines:STORY.conversations.purchasing.prompt,who:'user',now:local,typingStart:0.65,size:16,opacity:enter(local,.5,.3)});
- message(ctx,sx+20,sy+279,sw-40,{lines:STORY.conversations.purchasing.reply,accent:C.claude,bg:'#FFF0E8',size:16,opacity:enter(local,3.3,.6)});
+ message(ctx,sx+20,sy+118,sw-40,{lines:STORY.conversations.purchasing.prompt,who:'user',now:local,typingStart:0.65,size:16,opacity:enter(local,.5,.3)});
+ message(ctx,sx+20,sy+241,sw-40,{lines:STORY.conversations.purchasing.reply,accent:C.claude,bg:'#FFF0E8',size:16,opacity:enter(local,3.3,.6)});
  round(ctx,sx+20,sy+550,sw-40,58,16,'#FFF','#E8DED9');text(ctx,'Message Claude…',sx+35,sy+569,16,C.muted);
  ctx.restore();
  ctx.save();ctx.translate(sw-offset,0);
@@ -277,8 +290,8 @@ function purchasingScreen(ctx,t){
      ['01','Read supplier invoice'],['02','Extract amount and VAT'],['03','Send for approval']
    ],local:local,offsets:[7.7,8.5,10.4],footer:'No custom backend required'});
  });
- const p=ease((local-8.8)/1.9);
- if(local>8.5){cursor(ctx,lerp(1075,800,p),lerp(562,690,p),local>10.7&&local<11.6?local-10.7:0);}
+ const p=ease((local-8.8)/2.2);
+ if(local>8.5){cursorTo(ctx,{x:1075,y:562},buttons.purchase(sx,sy,sw),p,local>=11.2&&local<12?(local-11.2)/.8:0);}
  footer(ctx,'Purchasing · Claude on mobile','User-built app · Same database rules');
 }
 function drawPurchaseApp(ctx,x,y,w,h,local){
@@ -307,8 +320,9 @@ function drawPurchaseApp(ctx,x,y,w,h,local){
        text(ctx,label,x+39,fy+9,12,C.muted,500);text(ctx,v,x+39,fy+28,17,C.ink,650);
       });
    });
-   round(ctx,x+24,y+587,w-48,48,12,local>11.2?'#E4F4EA':C.green);
-   text(ctx,local>11.2?'✓  Sent for approval':'Send for approval',x+w/2,y+598,16,local>11.2?C.green:'#FFFFFF',700,'center');
+   const button=buttons.purchase(x,y,w);
+   round(ctx,button.x,button.y,button.w,button.h,12,local>=11.2?'#E4F4EA':C.green);
+   text(ctx,local>=11.2?'✓  Sent for approval':'Send for approval',x+w/2,y+598,16,local>11.2?C.green:'#FFFFFF',700,'center');
   });
 }
 function infoPanel(ctx,x,y,w,h,accent,{label,title,steps,local,offsets,footer:foot}){
@@ -333,7 +347,7 @@ function laptopFrame(ctx,x,y,w,h,client,accent){
 function quotePreview(ctx,x,y,w,h,local){
  round(ctx,x,y,w,h,0,'#FFFFFF');
  text(ctx,'Sales  /  New quote',x+28,y+26,21,C.ink,700);
- pill(ctx,local>11.2?'Order created':'Draft',x+w-145,y+23,115,{bg:local>11.2?'#E5F5EB':'#EFF2FB',color:local>11.2?C.green:C.brand,size:13});
+ pill(ctx,local>=11.2?'Order created':'Draft',x+w-145,y+23,115,{bg:local>=11.2?'#E5F5EB':'#EFF2FB',color:local>11.2?C.green:C.brand,size:13});
  stroke(ctx,x+20,y+78,x+w-20,y+78,C.border);
  text(ctx,'Customer',x+35,y+110,13,C.muted,650);
  round(ctx,x+30,y+136,w-60,55,10,'#FAFBFD','#E3E8F0');text(ctx,'Northstar Retail',x+49,y+153,18,C.ink,650);
@@ -346,8 +360,9 @@ function quotePreview(ctx,x,y,w,h,local){
  fadeDraw(ctx,enter(local,8.0,.7),()=>{
   stroke(ctx,x+30,y+507,x+w-30,y+507,C.border);
   text(ctx,'Total',x+35,y+528,16,C.muted,550);text(ctx,'€896.00',x+w-35,y+521,28,C.ink,750,'right');
-  round(ctx,x+w-245,y+592,215,50,11,local>11.2?'#E7F4EB':'#4D68B2');
-  text(ctx,local>11.2?'✓  Order created':'Convert to sales order',x+w-136,y+605,15,local>11.2?C.green:'#FFFFFF',700,'center');
+  const button=buttons.sales(x,y,w,h),target=center(button);
+  round(ctx,button.x,button.y,button.w,button.h,11,local>=11.2?'#E7F4EB':'#4D68B2');
+  text(ctx,local>=11.2?'✓  Order created':'Convert to sales order',target.x,button.y+13,15,local>=11.2?C.green:'#FFFFFF',700,'center');
  });
 }
 function appNavigation(ctx,x,y,w,h,local,items,accent){
@@ -396,12 +411,15 @@ function salesScene(ctx,t){
  circle(ctx,x+42,ly+42,16,C.gemini);text(ctx,'Gemini',x+70,ly+27,21,C.text,700);
 
  const msgWidth=lerp(560,416,split);
- message(ctx,x+24,ly+137,msgWidth,{lines:STORY.conversations.sales.prompt,who:'user',now:local,typingStart:.75,size:16,opacity:enter(local,.5,.45)});
- message(ctx,x+24,ly+258,msgWidth,{lines:STORY.conversations.sales.reply,accent:C.gemini,bg:'#ECEEFF',size:16,opacity:enter(local,3.1,.6)});
+ message(ctx,x+24,ly+88,msgWidth,{lines:STORY.conversations.sales.prompt,who:'user',now:local,typingStart:.75,size:16,opacity:enter(local,.5,.45)});
+ message(ctx,x+24,ly+211,msgWidth,{lines:STORY.conversations.sales.reply,accent:C.gemini,bg:'#ECEEFF',size:16,opacity:enter(local,3.1,.6)});
  round(ctx,x+24,ly+509,msgWidth,56,11,'#FFFFFF','#E2E7EE');text(ctx,'Ask Gemini…',x+47,ly+529,17,C.muted);
  ctx.restore();
  ctx.restore();
- if(local>9.0&&local<12.3){const p=ease((local-9.0)/1.8);cursor(ctx,lerp(1040,1334,p),lerp(572,736,p),local>11.05&&local<11.9?local-11.05:0);}
+ if(local>9.0&&local<12.3){
+   const p=ease((local-9.0)/2);
+   cursorTo(ctx,{x:1040,y:572},buttons.sales(x,ly,w-1,rh),p,local>=11.2&&local<12?(local-11.2)/.8:0);
+ }
  footer(ctx,'Sales · Gemini on laptop','From quotation to sales order');
 }
 function financePreview(ctx,x,y,w,h,local){
@@ -421,12 +439,14 @@ function financePreview(ctx,x,y,w,h,local){
        const yy=y+280+i*68;round(ctx,x+27,yy,w-54,60,9,i%2?'#FFFFFF':'#F9FAFD','#EBEFF5');
        text(ctx,code,x+42,yy+17,14,C.muted,700);text(ctx,label,x+145,yy+15,16,C.ink,570);
        text(ctx,value,x+w-262,yy+15,16,C.ink,650);
-       pill(ctx,i===1?'Auto-approved':(local>9.2&&i===0?'Approved':'Review'),x+w-145,yy+12,115,{bg:i===1||local>9.2&&i===0?'#E8F5ED':'#EFF2FB',color:i===1||local>9.2&&i===0?C.green:C.brand,size:12});
+       const button=buttons.review(x,y+i*68,w);
+       pill(ctx,i===1?'Auto-approved':(local>=9.2&&i===0?'Approved':'Review'),button.x,button.y,button.w,{bg:i===1||local>=9.2&&i===0?'#E8F5ED':'#EFF2FB',color:i===1||local>=9.2&&i===0?C.green:C.brand,size:12});
     }));
     text(ctx,'Bank reconciliation',x+31,y+516,19,C.ink,700);
     round(ctx,x+28,y+551,w-56,58,9,'#F5F7FB','#E7EBF2');
     text(ctx,'Bank transfer · Northstar Retail',x+44,y+569,15,C.ink,600);
-    pill(ctx,local>10.7?'Matched':'Match',x+w-155,y+563,122,{bg:local>10.7?'#E5F5EC':'#E9EFFB',color:local>10.7?C.green:C.blue,size:12});
+    const button=buttons.match(x,y,w);
+    pill(ctx,local>=10.7?'Matched':'Match',button.x,button.y,button.w,{bg:local>=10.7?'#E5F5EC':'#E9EFFB',color:local>=10.7?C.green:C.blue,size:12});
   });
 }
 function financeScene(ctx,t){
@@ -454,11 +474,18 @@ function financeScene(ctx,t){
  circle(ctx,x+39,ly+44,16,C.chatgpt);text(ctx,'ChatGPT',x+70,ly+31,21,C.ink,700);
 
  const msgWidth=lerp(560,342,split);
- message(ctx,x+24,ly+150,msgWidth,{who:'user',lines:STORY.conversations.finance.prompt,now:local,typingStart:.7,size:16,opacity:enter(local,.5,.35)});
- message(ctx,x+24,ly+273,msgWidth,{who:'assistant',lines:STORY.conversations.finance.reply,accent:C.chatgpt,bg:'#E6F5ED',size:16,opacity:enter(local,2.5,.7)});
+ message(ctx,x+24,ly+88,msgWidth,{who:'user',lines:STORY.conversations.finance.prompt,now:local,typingStart:.7,size:16,opacity:enter(local,.5,.35)});
+ message(ctx,x+24,ly+211,msgWidth,{who:'assistant',lines:STORY.conversations.finance.reply,accent:C.chatgpt,bg:'#E6F5ED',size:16,opacity:enter(local,2.5,.7)});
  ctx.restore();
  ctx.restore();
- if(local>8.2&&local<11.2){const p=ease((local-8.2)/1.8);cursor(ctx,lerp(1195,1390,p),lerp(485,501,p),local>9.1&&local<10.0?local-9.1:0);}
+ if(local>8.2&&local<11.7){
+   const review=buttons.review(x,ly,w-2),match=buttons.match(x,ly,w-2);
+   if(local<9.8){
+     cursorTo(ctx,{x:1195,y:485},review,ease((local-8.2)/.9),local>=9.2&&local<9.8?(local-9.2)/.6:0);
+   } else {
+     cursorTo(ctx,center(review),match,ease((local-9.8)/.8),local>=10.7&&local<11.5?(local-10.7)/.8:0);
+   }
+ }
  footer(ctx,'Finance · ChatGPT on desktop','Approve invoices · Reconcile payments');
 }
 function finalScene(ctx,t){
@@ -489,7 +516,6 @@ function finalScene(ctx,t){
    text(ctx,'Shared records  ·  Permissions  ·  Rules',dbX+88,dbY+59,16,C.muted,550);
   });
   drawWordmark(ctx,690,785,220);
-  footer(ctx,'Acme · Three teams, three experiences','');
 }
 const paint={database:adminScene,purchasing:purchasingScreen,sales:salesScene,finance:financeScene,final:finalScene};
 /** Render a frame for absolute time `seconds` (0 .. 60). Can be called at any FPS. */

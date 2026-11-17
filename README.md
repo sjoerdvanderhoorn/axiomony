@@ -31,8 +31,8 @@ Now the employees take over. Someone in **Purchasing** opens Claude on their pho
 They all get different interfaces—without having to build three different business backends. Their tools use the same PostgreSQL data, permissions, and workflows.
 
 <p align="center">
-  <a href="https://sjoerdvanderhoorn.github.io/axiomony/assets/acme-software-demo.mp4?v=svg-wordmark-20261117">
-    <img src="docs/assets/acme-walkthrough.gif?v=svg-wordmark-20261117" alt="Watch the animated Acme walkthrough: ChatGPT sets up a shared database, then Purchasing, Sales and Finance create their own tools" width="900">
+  <a href="https://sjoerdvanderhoorn.github.io/axiomony/assets/acme-software-demo.mp4?v=layout-clicks-20261117">
+    <img src="docs/assets/acme-walkthrough.gif?v=layout-clicks-20261117" alt="Watch the animated Acme walkthrough: ChatGPT sets up a shared database, then Purchasing, Sales and Finance create their own tools" width="900">
   </a>
 </p>
 

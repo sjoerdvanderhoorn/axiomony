@@ -56,3 +56,5 @@ The animation uses drawn UI-style mockups labeled ChatGPT, Claude, and Gemini. B
 The browser player and exporter both await `prepareAssets()` to load the exact `docs/assets/axiomony-wordmark.svg`. The wordmark is drawn as an image, never recreated with a font. Re-render all three media files after changing the animation or wordmark.
 
 Run `npm --prefix demo/acme test` to check removed labels and SVG usage across all scenes. GitHub Pages deploys again after the render workflow completes, so regenerated media committed by the workflow is published too.
+
+Button rectangles also define the cursor targets, and the rendering checks verify that the cursor tip reaches the center of every clicked button. Conversation bubbles use the same 25 px gap across the database, Purchasing, Sales and Finance scenes.
