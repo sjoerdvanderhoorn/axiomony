@@ -35,8 +35,8 @@ export const STORY = {
       reply: 'Sure. I’ll use your existing customers,\nproducts and sales orders.',
     },
     finance: {
-      prompt: 'Could you show us which invoices still need\napproval, and help match bank payments?',
-      reply: 'Absolutely. I’ll bring those together in one\nview, using your existing access rules.',
+      prompt: 'Can you show invoices waiting for\napproval and match bank payments?',
+      reply: 'Sure. I’ll put both into one view,\nusing your existing permissions.',
     },
   },
   tables: ['Customers', 'Sales orders', 'Sales invoices', 'Suppliers', 'Purchases', 'Purchase invoices', 'Products', 'Payments'],
