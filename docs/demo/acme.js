@@ -163,7 +163,10 @@ function erdNode(ctx,x,y,w,h,label,t,at){
  fadeDraw(ctx,p,()=>{const yy=y+(1-p)*17;round(ctx,x,yy,w,h,9,'#FFFFFF','#D8E3EF');round(ctx,x,yy,6,h,[9,0,0,9],C.brand);text(ctx,label,x+16,yy+12,13,C.ink,650);stroke(ctx,x+15,yy+40,x+w-15,yy+40,'#EBEFF5');text(ctx,'id  ·  PK',x+16,yy+47,10,C.muted);});
 }
 function adminScene(ctx,t){
-  const x=112,y=123,w=1376,h=698;
+  const x=112,y=123,h=698;
+  const workspaceReveal=enter(t,12.9,1.1);
+  // The outer browser itself grows only when the Database Workspace appears.
+  const w=lerp(865,1376,workspaceReveal);
   chrome(ctx,x,y,w,h,{client:'ChatGPT',accent:C.chatgpt});
   ctx.save();ctx.beginPath();ctx.roundRect(x+1,y+48,w-2,h-49, [0,0,19,19]);ctx.clip();
   // The familiar chat sidebar is present from the very first frame.
@@ -183,7 +186,6 @@ function adminScene(ctx,t){
   const right=x+867;
   // Reveal Database Workspace only AFTER the assistant offers its proposal.
   // Slide in from the right with an eased wipe; nothing is shown during prompts.
-  const workspaceReveal=enter(t,12.9,1.1);
   if(workspaceReveal>0){
   ctx.save();
   ctx.globalAlpha*=workspaceReveal;
@@ -354,19 +356,23 @@ function appNavigation(ctx,x,y,w,h,local,items,accent){
  return visibleWidth;
 }
 function salesScene(ctx,t){
- const local=t-31,x=108,y=138,w=1384,h=670;
+ const local=t-31,x=108,y=138,h=670;
+ const split=enter(local,4.4,1.15);
+ const w=lerp(650,1384,split);
  laptopFrame(ctx,x,y,w,h,'Gemini',C.gemini);
  ctx.save();ctx.beginPath();ctx.roundRect(x+1,y+47,w-2,h-49,[0,0,19,19]);ctx.clip();
- const ly=y+47,rh=h-49,split=enter(local,4.4,1.15);
- const leftWidth=lerp(w-2,466,split);
+ const ly=y+47,rh=h-49;
+ const leftWidth=lerp(648,466,split);
  // Construct the right panel under the moving chat panel, revealing it
  // only as the agent expands the workspace.
  if(split>0){
-   const appX=x+468,appW=w-469;
+   const appX=x+leftWidth+2,appW=w-leftWidth-3;
    ctx.save();ctx.beginPath();ctx.rect(x+leftWidth,ly,w-leftWidth,rh);ctx.clip();
    fadeDraw(ctx,split,()=>{
-     const nav=appNavigation(ctx,appX,ly,appW,rh,local,['Quotes','Customers','Orders','Products'],C.gemini);
-     quotePreview(ctx,appX+nav,ly,appW-nav,rh,local);
+     if(appW>200){
+       const nav=appNavigation(ctx,appX,ly,appW,rh,local,['Quotes','Customers','Orders','Products'],C.gemini);
+       quotePreview(ctx,appX+nav,ly,appW-nav,rh,local);
+     }
    });
    ctx.restore();
  }
@@ -410,17 +416,21 @@ function financePreview(ctx,x,y,w,h,local){
   });
 }
 function financeScene(ctx,t){
- const local=t-44,x=108,y=125,w=1383,h=682;
+ const local=t-44,x=108,y=125,h=682;
+ const split=enter(local,3.9,1.1);
+ const w=lerp(650,1383,split);
  chrome(ctx,x,y,w,h,{client:'ChatGPT',accent:C.chatgpt});
  ctx.save();ctx.beginPath();ctx.roundRect(x+1,y+48,w-2,h-49,[0,0,19,19]);ctx.clip();
- const ly=y+48,rh=h-49,split=enter(local,3.9,1.1);
- const leftWidth=lerp(w-2,390,split);
+ const ly=y+48,rh=h-49;
+ const leftWidth=lerp(648,390,split);
  if(split>0){
-   const appX=x+391,appW=w-393;
+   const appX=x+leftWidth+1,appW=w-leftWidth-3;
    ctx.save();ctx.beginPath();ctx.rect(x+leftWidth,ly,w-leftWidth,rh);ctx.clip();
    fadeDraw(ctx,split,()=>{
-     const nav=appNavigation(ctx,appX,ly,appW,rh,local,['Overview','Approvals','Payments','Reports'],C.chatgpt);
-     financePreview(ctx,appX+nav,ly,appW-nav,rh,local);
+     if(appW>200){
+       const nav=appNavigation(ctx,appX,ly,appW,rh,local,['Overview','Approvals','Payments','Reports'],C.chatgpt);
+       financePreview(ctx,appX+nav,ly,appW-nav,rh,local);
+     }
    });
    ctx.restore();
  }
