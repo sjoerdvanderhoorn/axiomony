@@ -21,22 +21,22 @@ export const STORY = {
   ],
   conversations: {
     database: {
-      initial: 'We are Acme. Set up accounting, purchasing,\nsales, invoices and payments.',
-      firstReply: 'I will define customers, suppliers, products,\npurchase orders, invoices and payments.',
-      rules: 'Purchasing submits invoices. Finance approves\namounts of €500 or more. Enforce role access.',
-      lastReply: 'Database model ready. Review the schema\nand approval policies before applying.',
+      initial: 'Voor ons bedrijf Acme zoeken we een database\nom facturen, verkopen en voorraad bij te houden.',
+      firstReply: 'Dat kan! Wie gaat ermee werken en wat\nmoeten die collega’s precies kunnen doen?',
+      rules: 'Inkoop voert facturen in, Finance keurt\nbedragen vanaf €500 goed en Sales maakt offertes.',
+      lastReply: 'Ik heb een voorstel voor de tabellen en\nrechten gemaakt. Zullen we het samen bekijken?',
     },
     purchasing: {
-      prompt: 'Build a mobile app to scan and submit\nsupplier invoices for Acme.',
-      reply: 'I can create a simple invoice capture flow\nusing your shared Acme data.',
+      prompt: 'Kan ik op mijn telefoon leveranciersfacturen\nscannen en meteen ter goedkeuring insturen?',
+      reply: 'Zeker. Ik maak een eenvoudige scan-app die\nmet de bestaande Acme-database werkt.',
     },
     sales: {
-      prompt: 'Make a quote builder that turns accepted\nquotes into sales orders.',
-      reply: 'I will reuse Acme products, customers\nand the existing order workflow.',
+      prompt: 'Ik wil makkelijker offertes maken. Kan een\ngoedgekeurde offerte ook direct een order worden?',
+      reply: 'Ja, ik maak een offertetool met de klanten,\nproducten en orders die Acme al gebruikt.',
     },
     finance: {
-      prompt: 'Create a dashboard for invoice approvals\nand bank reconciliation.',
-      reply: 'I will create a focused finance workspace\nusing the existing permissions.',
+      prompt: 'Kun je voor Finance een overzicht maken\nvan facturen die nog goedkeuring nodig hebben?',
+      reply: 'Natuurlijk. Ik zet ook de betalingen en\nbankafschriften erbij, binnen jullie rechten.',
     },
   },
   tables: ['Customers', 'Sales orders', 'Sales invoices', 'Suppliers', 'Purchases', 'Purchase invoices', 'Products', 'Payments'],
@@ -104,12 +104,28 @@ function topBar(ctx,t,phase){
   round(ctx,x,y,w*clamp(t/STORY.duration),4,2,C.brand);
 }
 function backdrop(ctx){
-  ctx.fillStyle='#F5F7FB';ctx.fillRect(0,0,1600,900);
-  const grad=ctx.createRadialGradient(700,315,50,770,520,1050);grad.addColorStop(0,'#FFFFFF');grad.addColorStop(1,'#F4F6FC');ctx.fillStyle=grad;ctx.fillRect(0,0,1600,900);
-  // Subtle grid: intentionally quiet so the product UI stays central.
-  ctx.strokeStyle='rgba(103,122,158,.055)';ctx.lineWidth=1;
-  for(let x=0;x<1600;x+=64)stroke(ctx,x,0,x,900,'rgba(119,135,172,.05)',1);
-  for(let y=0;y<900;y+=64)stroke(ctx,0,y,1600,y,'rgba(119,135,172,.05)',1);
+  // Soft lilac/blue ambience makes the scene feel like a designed product film.
+  const base=ctx.createLinearGradient(0,0,1600,900);
+  base.addColorStop(0,'#EDF1FC');base.addColorStop(.48,'#FAF7F5');base.addColorStop(1,'#E8F1F4');
+  ctx.fillStyle=base;ctx.fillRect(0,0,1600,900);
+  const glow=(x,y,r,color)=>{
+    const g=ctx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,color);g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);
+  };
+  glow(145,170,660,'rgba(167,180,238,.34)');
+  glow(1450,740,650,'rgba(145,215,204,.30)');
+  glow(1150,90,510,'rgba(255,215,195,.28)');
+  // Lightweight graphic accents add depth without competing with UI content.
+  ctx.save();ctx.lineWidth=1;
+  for(let i=0;i<7;i++){
+    ctx.beginPath();ctx.arc(1415,150,185+i*26,Math.PI*.06,Math.PI*.96);
+    ctx.strokeStyle='rgba(90,111,167,.055)';ctx.stroke();
+  }
+  for(let x=26;x<1600;x+=68)for(let y=26;y<900;y+=68){
+    circle(ctx,x,y,1,'rgba(79,102,151,.09)');
+  }
+  ctx.restore();
 }
 function chrome(ctx,x,y,w,h,{client='ChatGPT',accent=C.chatgpt,bg='#FFFFFF'}={}){
   ctx.save();shadow(ctx,30,.12);round(ctx,x,y,w,h,20,bg,C.border,1);ctx.restore();
@@ -150,8 +166,14 @@ function adminScene(ctx,t){
   const x=112,y=123,w=1376,h=698;
   chrome(ctx,x,y,w,h,{client:'ChatGPT',accent:C.chatgpt});
   ctx.save();ctx.beginPath();ctx.roundRect(x+1,y+48,w-2,h-49, [0,0,19,19]);ctx.clip();
-  chatSidebar(ctx,x+1,y+48,228,h-49,'ChatGPT',C.chatgpt);
-  const bx=x+246,by=y+65;
+  // The navigation begins fully collapsed and expands only after the first
+  // message has been sent. Both the sidebar and chat area move with easing.
+  const sidebar=enter(t,4.6,1.15);
+  ctx.save();
+  ctx.beginPath();ctx.rect(x+1,y+48,228*sidebar,h-49);ctx.clip();
+  fadeDraw(ctx,sidebar,()=>chatSidebar(ctx,x+1,y+48,228,h-49,'ChatGPT',C.chatgpt));
+  ctx.restore();
+  const bx=lerp(x+27,x+246,sidebar),by=y+65;
   text(ctx,'Design the Acme database',bx+24,by+2,25,C.text,700);
   text(ctx,'Conversation  /  Administration MCP',bx+24,by+40,14,C.muted);
   stroke(ctx,bx+20,by+79,bx+598,by+79,C.border);
@@ -163,7 +185,7 @@ function adminScene(ctx,t){
   const inputY=by+551;
   round(ctx,msgX,inputY,540,56,13,'#FFFFFF','#E2E6EE');text(ctx,'Ask a follow-up…',msgX+20,inputY+18,17,'#9AA6B7');
   circle(ctx,msgX+506,inputY+28,16,'#E8EDF7');text(ctx,'↑',msgX+497,inputY+13,23,C.brand,650);
-  const right=bx+621;
+  const right=x+867;
   round(ctx,right,by-8,487,630,13,'#FCFDFE','#E6EBF3');
   text(ctx,'DATABASE WORKSPACE',right+24,by+17,12,C.muted,750);
   text(ctx,'Acme  /  Accounting model',right+24,by+46,18,C.text,700);
@@ -304,6 +326,25 @@ function quotePreview(ctx,x,y,w,h,local){
   text(ctx,local>11.2?'✓  Order created':'Convert to sales order',x+w-136,y+605,15,local>11.2?C.green:'#FFFFFF',700,'center');
  });
 }
+function appNavigation(ctx,x,y,w,h,local,items,accent){
+ const progress=enter(local,4.25,1.1);
+ if(progress<=0)return 0;
+ const visibleWidth=168*progress;
+ ctx.save();ctx.beginPath();ctx.rect(x,y,visibleWidth,h);ctx.clip();
+ ctx.globalAlpha*=progress;
+ round(ctx,x,y,168,h,0,'#F3F5FA');
+ stroke(ctx,x+167,y,x+167,y+h,'#DDE4EF');
+ text(ctx,'ACME',x+20,y+25,15,C.ink,750);
+ text(ctx,'Workspace',x+20,y+53,12,C.muted,500);
+ items.forEach((item,i)=>{
+   const yy=y+109+i*52;
+   if(i===0)round(ctx,x+11,yy-8,146,40,10,'#E2E9F7');
+   circle(ctx,x+28,yy+11,4,i===0?accent:'#A9B5C7');
+   text(ctx,item,x+43,yy,14,i===0?C.ink:C.muted,i===0?700:500);
+ });
+ ctx.restore();
+ return visibleWidth;
+}
 function salesScene(ctx,t){
  const local=t-31,x=108,y=138,w=1384,h=670;
  laptopFrame(ctx,x,y,w,h,'Gemini',C.gemini);
@@ -316,7 +357,10 @@ function salesScene(ctx,t){
  message(ctx,lx+24,ly+258,lw-50,{lines:STORY.conversations.sales.reply,accent:C.gemini,size:16,opacity:enter(local,3.1,.6)});
  round(ctx,lx+24,ly+509,lw-50,56,11,'#FFFFFF','#E2E7EE');text(ctx,'Ask Gemini…',lx+47,ly+529,17,C.muted);
  const rx=x+lw+2,ry=ly,rw=w-lw-3,rh=h-49;
- fadeDraw(ctx,enter(local,4,.8),()=>quotePreview(ctx,rx,ry,rw,rh,local));
+ fadeDraw(ctx,enter(local,4,.8),()=>{
+   const nav=appNavigation(ctx,rx,ry,rw,rh,local,['Offertes','Klanten','Orders','Producten'],C.gemini);
+   quotePreview(ctx,rx+nav,ry,rw-nav,rh,local);
+ });
  ctx.restore();
  if(local>9.0&&local<12.3){const p=ease((local-9.0)/1.8);cursor(ctx,lerp(1040,1334,p),lerp(572,736,p),local>11.05&&local<11.9?local-11.05:0);}
  footer(ctx,'Sales · Gemini on laptop','From quotation to sales order');
@@ -356,7 +400,10 @@ function financeScene(ctx,t){
  message(ctx,x+24,ly+150,lw-48,{who:'user',lines:STORY.conversations.finance.prompt,now:local,typingStart:.7,size:16,opacity:enter(local,.5,.35)});
  message(ctx,x+24,ly+273,lw-48,{who:'assistant',lines:STORY.conversations.finance.reply,accent:C.chatgpt,size:16,opacity:enter(local,2.5,.7)});
  const rx=x+lw+1,ry=ly,rw=w-lw-3,rh=h-49;
- fadeDraw(ctx,enter(local,3.7,.8),()=>financePreview(ctx,rx,ry,rw,rh,local));
+ fadeDraw(ctx,enter(local,3.7,.8),()=>{
+   const nav=appNavigation(ctx,rx,ry,rw,rh,local,['Overzicht','Goedkeuringen','Betalingen','Rapportages'],C.chatgpt);
+   financePreview(ctx,rx+nav,ry,rw-nav,rh,local);
+ });
  ctx.restore();
  if(local>8.2&&local<11.2){const p=ease((local-8.2)/1.8);cursor(ctx,lerp(1195,1390,p),lerp(485,501,p),local>9.1&&local<10.0?local-9.1:0);}
  footer(ctx,'Finance · ChatGPT on desktop','Approve invoices · Reconcile payments');
